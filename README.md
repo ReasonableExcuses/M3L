@@ -1,7 +1,7 @@
 # M3L — High-Performance AI-First 3D Scene Language & Engine
 
 **Version:** 0.7.0 (Hybrid Rust-Python Supremacy Architecture)  
-**License:** MIT
+**License:** Proprietary (All Rights Reserved — ReasonableExcuses)
 
 M3L is a deterministic, AI-native 3D scene specification language, geometry kernel, and compiler designed from first principles for autonomous LLM agents and human 3D artists.
 

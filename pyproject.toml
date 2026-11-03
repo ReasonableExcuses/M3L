@@ -8,8 +8,8 @@ version = "0.7.0"
 description = "Deterministic AI-oriented 3D scene language and compiler with procedural solids, hybrid Rust core, CSG booleans, kinematic constraints, and multi-format exporters"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
-authors = [{name = "M3L Team"}]
+license = {text = "Proprietary"}
+authors = [{name = "ReasonableExcuses"}]
 dependencies = []
 
 [project.optional-dependencies]
