@@ -1,0 +1,50 @@
+scene "sculptural_ceramic_vase" {
+  units = m
+
+  material sea_glaze {
+    base = "#247c83"
+    roughness = 0.22
+    metallic = 0.05
+  }
+
+  material foot_glaze {
+    base = "#153d46"
+    roughness = 0.34
+    metallic = 0.08
+  }
+
+  revolve vase_body {
+    # Closed wall cross-section: outer shell, rim, inner cavity, and solid floor.
+    profile = [[0, -0.50], [0.17, -0.50], [0.29, -0.42], [0.37, -0.14], [0.34, 0.15], [0.24, 0.39], [0.17, 0.50], [0.13, 0.50], [0.13, 0.40], [0.20, 0.15], [0.22, -0.14], [0.19, -0.36], [0, -0.36]]
+    segments = 96
+    material = sea_glaze
+  }
+
+  cylinder foot_ring {
+    radius = 0.19
+    height = 0.045
+    at = [0, -0.495, 0]
+    material = foot_glaze
+  }
+
+  camera {
+    at = [1.65, 1.0, 2.0]
+    target = [0, 0, 0]
+    fov = 42
+  }
+
+  light key {
+    type = point
+    at = [2.0, 2.6, 1.7]
+    intensity = 500
+    range = 8
+  }
+
+  light fill {
+    type = point
+    at = [-2.0, 1.2, -1.5]
+    color = "#b9ddff"
+    intensity = 180
+    range = 6
+  }
+}

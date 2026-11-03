@@ -1,0 +1,263 @@
+# APEX-7 Deep Space Reconnaissance Probe
+# Authored in M3L v0.5.0 demonstrating:
+# - Parametric multi-surface PBR materials with procedural micro-textures (anodized metal, carbon fiber, brushed metal)
+# - Optical transmission, IOR, and clearcoat properties for the observation dome and star tracker lenses
+# - Revolved aerodynamic/space capsule core avionics and ion propulsion nozzle bell
+# - Extruded high-aspect-ratio carbon-composite solar array wings
+# - Parallel-transported sweep waveguide tube for the high-gain deep-space communication dish
+# - 3D procedural cylinder array for reaction-control system (RCS) thrusters
+# - Explicit topological constraints ('supported_by') validating upright physical contact on the equipment deck
+# - 3-point studio lighting and perspective camera framing
+
+scene "apex_orbital_probe" {
+  units = m
+
+  material hull_titanium {
+    base = "#52616f"
+    roughness = 0.28
+    metallic = 0.88
+    surface = "anodized_metal"
+    texture_resolution = 512
+  }
+
+  material solar_panel {
+    base = "#0f1d38"
+    roughness = 0.18
+    metallic = 0.82
+    surface = "carbon_fiber"
+    texture_resolution = 512
+  }
+
+  material thermal_gold {
+    base = "#d4a342"
+    roughness = 0.25
+    metallic = 0.94
+    surface = "brushed_metal"
+    texture_resolution = 512
+  }
+
+  material sensor_optics {
+    base = "#e2f1f8"
+    roughness = 0.04
+    metallic = 0.0
+    transmission = 0.92
+    ior = 1.52
+    clearcoat = 0.8
+    clearcoat_roughness = 0.02
+  }
+
+  material radiator_graphite {
+    base = "#1b1e22"
+    roughness = 0.75
+    metallic = 0.20
+  }
+
+  material thruster_dark {
+    base = "#2c3138"
+    roughness = 0.40
+    metallic = 0.80
+    surface = "brushed_metal"
+    texture_resolution = 512
+  }
+
+  material glow_cyan {
+    base = "#38ef7d"
+    roughness = 0.12
+    metallic = 0.0
+    emissive = "#00f2fe"
+  }
+
+  box equipment_deck {
+    size = [1.2, 0.10, 1.2]
+    at = [0, -0.70, 0]
+    material = radiator_graphite
+  }
+
+  box avionics_pack_left {
+    size = [0.25, 0.12, 0.35]
+    at = [-0.35, -0.59, 0]
+    material = hull_titanium
+  }
+
+  box avionics_pack_right {
+    size = [0.25, 0.12, 0.35]
+    at = [0.35, -0.59, 0]
+    material = hull_titanium
+  }
+
+  constraint avionics_left_supported {
+    kind = supported_by
+    object = avionics_pack_left
+    target = equipment_deck
+    tolerance = 0.01
+  }
+
+  constraint avionics_right_supported {
+    kind = supported_by
+    object = avionics_pack_right
+    target = equipment_deck
+    tolerance = 0.01
+  }
+
+  revolve core_avionics {
+    profile = [[0, -0.65], [0.45, -0.65], [0.55, -0.30], [0.52, 0.20], [0.40, 0.55], [0.22, 0.75], [0, 0.75]]
+    segments = 64
+    material = hull_titanium
+  }
+
+  cylinder heat_shield_collar {
+    radius = 0.48
+    height = 0.08
+    at = [0, -0.61, 0]
+    material = thermal_gold
+  }
+
+  revolve thruster_bell {
+    profile = [[0.06, -0.92], [0.18, -0.92], [0.11, -0.75], [0.08, -0.65], [0, -0.65]]
+    segments = 48
+    material = thruster_dark
+  }
+
+  cylinder ion_core {
+    radius = 0.09
+    height = 0.04
+    at = [0, -0.89, 0]
+    material = glow_cyan
+  }
+
+  sphere sensor_dome {
+    radius = 0.22
+    segments = 36
+    rings = 24
+    at = [0, 0.75, 0]
+    material = sensor_optics
+  }
+
+  cylinder sensor_emitter {
+    radius = 0.08
+    height = 0.12
+    at = [0, 0.72, 0]
+    material = glow_cyan
+  }
+
+  cylinder star_tracker_left {
+    radius = 0.05
+    height = 0.16
+    at = [-0.38, 0.35, 0.25]
+    rotate = [25, 0, -35]
+    material = thruster_dark
+  }
+
+  sphere star_lens_left {
+    radius = 0.042
+    at = [-0.43, 0.42, 0.28]
+    material = sensor_optics
+  }
+
+  cylinder star_tracker_right {
+    radius = 0.05
+    height = 0.16
+    at = [0.38, 0.35, 0.25]
+    rotate = [25, 0, 35]
+    material = thruster_dark
+  }
+
+  sphere star_lens_right {
+    radius = 0.042
+    at = [0.43, 0.42, 0.28]
+    material = sensor_optics
+  }
+
+  extrude wing_left {
+    profile = [[-0.45, -0.22], [-1.45, -0.35], [-1.65, -0.25], [-1.65, 0.25], [-1.45, 0.35], [-0.45, 0.22]]
+    depth = 0.025
+    at = [0, -0.0125, 0]
+    material = solar_panel
+  }
+
+  extrude wing_right {
+    profile = [[0.45, -0.22], [1.45, -0.35], [1.65, -0.25], [1.65, 0.25], [1.45, 0.35], [0.45, 0.22]]
+    depth = 0.025
+    at = [0, -0.0125, 0]
+    material = solar_panel
+  }
+
+  cylinder wing_spar_left {
+    radius = 0.03
+    height = 1.15
+    at = [-1.02, 0, 0]
+    rotate = [0, 0, 90]
+    material = hull_titanium
+  }
+
+  cylinder wing_spar_right {
+    radius = 0.03
+    height = 1.15
+    at = [1.02, 0, 0]
+    rotate = [0, 0, 90]
+    material = hull_titanium
+  }
+
+  revolve antenna_dish {
+    profile = [[0.02, 0.40], [0.26, 0.52], [0.28, 0.54], [0.27, 0.55], [0.24, 0.53], [0.02, 0.43], [0, 0.43], [0, 0.40]]
+    segments = 48
+    at = [0, 0.20, -0.55]
+    rotate = [40, 0, 0]
+    material = thermal_gold
+  }
+
+  cylinder dish_feed {
+    radius = 0.022
+    height = 0.16
+    at = [0, 0.72, -0.80]
+    rotate = [-50, 0, 0]
+    material = thruster_dark
+  }
+
+  sweep antenna_boom {
+    path = [[0, 0.15, -0.38], [0, 0.32, -0.55], [0, 0.50, -0.68]]
+    radius = 0.016
+    segments = 16
+    material = hull_titanium
+  }
+
+  array rcs_thruster_quad {
+    shape = cylinder
+    counts = [2, 1, 2]
+    step = [0.86, 0, 0.86]
+    at = [-0.43, -0.15, -0.43]
+    radius = 0.028
+    height = 0.07
+    material = thruster_dark
+  }
+
+  camera {
+    at = [2.2, 1.6, 2.6]
+    target = [0, 0.0, 0]
+    fov = 42
+  }
+
+  light key {
+    type = point
+    at = [2.5, 3.5, 3.0]
+    intensity = 650
+    range = 12
+  }
+
+  light fill {
+    type = point
+    at = [-3.0, 1.5, -2.5]
+    intensity = 280
+    range = 10
+    color = "#8ec5fc"
+  }
+
+  light rim {
+    type = point
+    at = [0.0, -2.0, -4.0]
+    intensity = 320
+    range = 8
+    color = "#e0c3fc"
+  }
+}
+

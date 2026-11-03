@@ -1,0 +1,361 @@
+scene "precision_lens_product_study" {
+  units = m
+
+  material black_anodized {
+    base = "#252a31"
+    roughness = 0.34
+    metallic = 0.88
+    surface = anodized_metal
+    texture_resolution = 512
+  }
+
+  material machined_titanium {
+    base = "#9ca8b1"
+    roughness = 0.27
+    metallic = 0.94
+    surface = brushed_metal
+    texture_resolution = 512
+  }
+
+  material grip_rubber {
+    base = "#1b1d20"
+    roughness = 0.82
+    metallic = 0.0
+    surface = rubber
+    texture_resolution = 512
+  }
+
+  material optical_coating {
+    base = "#42627c"
+    roughness = 0.12
+    metallic = 0.02
+    transmission = 0.72
+    ior = 1.38
+    clearcoat = 0.65
+    clearcoat_roughness = 0.12
+    surface = ceramic_glaze
+    texture_resolution = 512
+  }
+
+  material carbon_composite {
+    base = "#24282d"
+    roughness = 0.31
+    metallic = 0.58
+    surface = carbon_fiber
+    texture_resolution = 512
+  }
+
+  material engraved_markings {
+    base = "#e4e7e8"
+    roughness = 0.48
+    metallic = 0.62
+  }
+
+  material dark_glass {
+    base = "#101d2b"
+    roughness = 0.08
+    metallic = 0.02
+    transmission = 0.96
+    ior = 1.52
+    clearcoat = 0.28
+    clearcoat_roughness = 0.08
+    surface = ceramic_glaze
+    texture_resolution = 256
+  }
+
+  # Rear mount and structural barrel.
+  cylinder rear_mount {
+    radius = 0.235
+    height = 0.17
+    at = [0, 0.10, 0]
+    material = black_anodized
+    segments = 96
+  }
+
+  revolve rear_mount_lip {
+    profile = [[0.18, -0.022], [0.255, -0.022], [0.255, 0.022], [0.18, 0.022]]
+    segments = 96
+    at = [0, 0.16, 0]
+    material = machined_titanium
+  }
+
+  cylinder rear_optic {
+    radius = 0.176
+    height = 0.012
+    at = [0, 0.188, 0]
+    material = dark_glass
+    segments = 96
+  }
+
+  cylinder main_barrel {
+    radius = 0.35
+    height = 0.56
+    at = [0, 0.46, 0]
+    material = black_anodized
+    segments = 128
+  }
+
+  # Carbon-fiber decorative band at the rear of the focus assembly.
+  cylinder carbon_band {
+    radius = 0.369
+    height = 0.065
+    at = [0, 0.665, 0]
+    material = carbon_composite
+    segments = 128
+  }
+
+  # Textured grip and a separate raised focus ring.
+  cylinder focus_grip {
+    radius = 0.372
+    height = 0.20
+    at = [0, 0.455, 0]
+    material = grip_rubber
+    segments = 128
+  }
+
+  revolve focus_ring_outer {
+    profile = [[0.365, -0.075], [0.405, -0.075], [0.405, 0.075], [0.365, 0.075]]
+    segments = 128
+    at = [0, 0.455, 0]
+    material = machined_titanium
+  }
+
+  # Fine raised machining ridges share one cached profile mesh.
+  revolve focus_ridge_01 {
+    profile = [[0.398, -0.006], [0.414, -0.006], [0.414, 0.006], [0.398, 0.006]]
+    segments = 128
+    at = [0, 0.392, 0]
+    material = black_anodized
+  }
+  revolve focus_ridge_02 {
+    profile = [[0.398, -0.006], [0.414, -0.006], [0.414, 0.006], [0.398, 0.006]]
+    segments = 128
+    at = [0, 0.418, 0]
+    material = black_anodized
+  }
+  revolve focus_ridge_03 {
+    profile = [[0.398, -0.006], [0.414, -0.006], [0.414, 0.006], [0.398, 0.006]]
+    segments = 128
+    at = [0, 0.444, 0]
+    material = black_anodized
+  }
+  revolve focus_ridge_04 {
+    profile = [[0.398, -0.006], [0.414, -0.006], [0.414, 0.006], [0.398, 0.006]]
+    segments = 128
+    at = [0, 0.470, 0]
+    material = black_anodized
+  }
+  revolve focus_ridge_05 {
+    profile = [[0.398, -0.006], [0.414, -0.006], [0.414, 0.006], [0.398, 0.006]]
+    segments = 128
+    at = [0, 0.496, 0]
+    material = black_anodized
+  }
+
+  # Front filter thread and machined bezel, all as hollow revolved solids.
+  revolve front_thread_ring {
+    profile = [[0.255, -0.026], [0.415, -0.026], [0.415, 0.026], [0.255, 0.026]]
+    segments = 128
+    at = [0, 0.762, 0]
+    material = black_anodized
+  }
+
+  revolve front_bezel {
+    profile = [[0.252, -0.016], [0.446, -0.016], [0.446, 0.016], [0.252, 0.016]]
+    segments = 128
+    at = [0, 0.798, 0]
+    material = machined_titanium
+  }
+
+  revolve bezel_dark_inset {
+    profile = [[0.252, -0.008], [0.272, -0.008], [0.272, 0.008], [0.252, 0.008]]
+    segments = 128
+    at = [0, 0.818, 0]
+    material = black_anodized
+  }
+
+  cylinder front_glass {
+    radius = 0.25
+    height = 0.012
+    at = [0, 0.804, 0]
+    material = dark_glass
+    segments = 128
+  }
+
+  cylinder optical_coating_inner {
+    radius = 0.222
+    height = 0.003
+    at = [0, 0.812, 0]
+    material = optical_coating
+    segments = 128
+  }
+
+  revolve glass_retainer {
+    profile = [[0.222, -0.004], [0.242, -0.004], [0.242, 0.004], [0.222, 0.004]]
+    segments = 128
+    at = [0, 0.817, 0]
+    material = machined_titanium
+  }
+
+  # Six discrete fasteners on the front face.
+  cylinder screw_01 {
+    radius = 0.009
+    height = 0.006
+    at = [0.350, 0.818, 0.000]
+    material = engraved_markings
+    segments = 24
+  }
+  cylinder screw_02 {
+    radius = 0.009
+    height = 0.006
+    at = [0.175, 0.818, 0.303]
+    material = engraved_markings
+    segments = 24
+  }
+  cylinder screw_03 {
+    radius = 0.009
+    height = 0.006
+    at = [-0.175, 0.818, 0.303]
+    material = engraved_markings
+    segments = 24
+  }
+  cylinder screw_04 {
+    radius = 0.009
+    height = 0.006
+    at = [-0.350, 0.818, 0.000]
+    material = engraved_markings
+    segments = 24
+  }
+  cylinder screw_05 {
+    radius = 0.009
+    height = 0.006
+    at = [-0.175, 0.818, -0.303]
+    material = engraved_markings
+    segments = 24
+  }
+  cylinder screw_06 {
+    radius = 0.009
+    height = 0.006
+    at = [0.175, 0.818, -0.303]
+    material = engraved_markings
+    segments = 24
+  }
+
+  # Radial index ticks on the bezel: thin, repeated, individually editable parts.
+  box tick_01 {
+    size = [0.026, 0.003, 0.004]
+    at = [0.310, 0.816, 0.000]
+    rotate = [0, 0, 0]
+    material = engraved_markings
+  }
+  box tick_02 {
+    size = [0.026, 0.003, 0.004]
+    at = [0.268, 0.816, 0.155]
+    rotate = [0, -30, 0]
+    material = engraved_markings
+  }
+  box tick_03 {
+    size = [0.026, 0.003, 0.004]
+    at = [0.155, 0.816, 0.268]
+    rotate = [0, -60, 0]
+    material = engraved_markings
+  }
+  box tick_04 {
+    size = [0.026, 0.003, 0.004]
+    at = [0.000, 0.816, 0.310]
+    rotate = [0, -90, 0]
+    material = engraved_markings
+  }
+  box tick_05 {
+    size = [0.026, 0.003, 0.004]
+    at = [-0.155, 0.816, 0.268]
+    rotate = [0, -120, 0]
+    material = engraved_markings
+  }
+  box tick_06 {
+    size = [0.026, 0.003, 0.004]
+    at = [-0.268, 0.816, 0.155]
+    rotate = [0, -150, 0]
+    material = engraved_markings
+  }
+  box tick_07 {
+    size = [0.026, 0.003, 0.004]
+    at = [-0.310, 0.816, 0.000]
+    rotate = [0, -180, 0]
+    material = engraved_markings
+  }
+  box tick_08 {
+    size = [0.026, 0.003, 0.004]
+    at = [-0.268, 0.816, -0.155]
+    rotate = [0, -210, 0]
+    material = engraved_markings
+  }
+  box tick_09 {
+    size = [0.026, 0.003, 0.004]
+    at = [-0.155, 0.816, -0.268]
+    rotate = [0, -240, 0]
+    material = engraved_markings
+  }
+  box tick_10 {
+    size = [0.026, 0.003, 0.004]
+    at = [0.000, 0.816, -0.310]
+    rotate = [0, -270, 0]
+    material = engraved_markings
+  }
+  box tick_11 {
+    size = [0.026, 0.003, 0.004]
+    at = [0.155, 0.816, -0.268]
+    rotate = [0, -300, 0]
+    material = engraved_markings
+  }
+  box tick_12 {
+    size = [0.026, 0.003, 0.004]
+    at = [0.268, 0.816, -0.155]
+    rotate = [0, -330, 0]
+    material = engraved_markings
+  }
+
+  # Small model-name plate and side controls.
+  box side_badge {
+    size = [0.016, 0.060, 0.105]
+    at = [0.357, 0.580, 0]
+    rotate = [0, 0, 0]
+    material = machined_titanium
+  }
+
+  box focus_marker {
+    size = [0.020, 0.018, 0.014]
+    at = [0.405, 0.465, 0]
+    material = engraved_markings
+  }
+
+  camera {
+    at = [1.45, 1.55, 2.05]
+    target = [0, 0.43, 0]
+    fov = 36
+  }
+
+  light key {
+    type = point
+    at = [1.5, 2.4, 2.7]
+    color = "#fff1df"
+    intensity = 620
+    range = 8
+  }
+
+  light fill {
+    type = point
+    at = [-2.0, 1.2, 1.0]
+    color = "#b7d6ff"
+    intensity = 320
+    range = 7
+  }
+
+  light rim {
+    type = point
+    at = [0.4, 2.1, -2.2]
+    color = "#d5e5ff"
+    intensity = 470
+    range = 7
+  }
+}

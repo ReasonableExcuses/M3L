@@ -1,0 +1,21 @@
+[package]
+name = "m3l_core"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "m3l_core"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+pyo3 = { version = "0.23", features = ["extension-module"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[features]
+default = []
+wasm = ["wasm-bindgen"]
+
+[dependencies.wasm-bindgen]
+version = "0.2"
+optional = true

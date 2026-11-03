@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "m3l-ai3d"
+version = "0.7.0"
+description = "Deterministic AI-oriented 3D scene language and compiler with procedural solids, hybrid Rust core, CSG booleans, kinematic constraints, and multi-format exporters"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "M3L Team"}]
+dependencies = []
+
+[project.optional-dependencies]
+cad = ["cadquery>=2.4,<3"]
+preview = ["vtk>=9.2", "Pillow>=10"]
+materials = ["numpy>=1.24", "Pillow>=10"]
+csg = ["manifold3d>=3.0"]
+core = ["m3l-core>=0.1.0"]
+
+[project.scripts]
+m3l = "m3l.cli:main"
+m3l-api = "m3l.api:main"
+m3l-mcp = "m3l.mcp_server:run_mcp_server"
+
+[tool.setuptools]
+packages = ["m3l"]

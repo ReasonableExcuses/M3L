@@ -1,0 +1,47 @@
+scene "ergonomic_tube_handle" {
+  units = m
+
+  material satin_alloy {
+    base = "#8b9aa6"
+    roughness = 0.26
+    metallic = 0.78
+  }
+
+  material dark_grip {
+    base = "#262b31"
+    roughness = 0.82
+  }
+
+  box mounting_block_left {
+    size = [0.16, 0.10, 0.20]
+    at = [-0.38, 0.05, 0]
+    material = dark_grip
+  }
+
+  box mounting_block_right {
+    size = [0.16, 0.10, 0.20]
+    at = [0.38, 0.05, 0]
+    material = dark_grip
+  }
+
+  sweep handle_tube {
+    # Open centerline with capped ends; frames are parallel-transported to reduce twist.
+    path = [[-0.38, 0.06, 0], [-0.40, 0.20, 0], [-0.34, 0.34, 0], [-0.20, 0.41, 0], [0, 0.42, 0], [0.20, 0.41, 0], [0.34, 0.34, 0], [0.40, 0.20, 0], [0.38, 0.06, 0]]
+    radius = 0.035
+    segments = 24
+    material = satin_alloy
+  }
+
+  camera {
+    at = [1.25, 0.95, 1.75]
+    target = [0, 0.2, 0]
+    fov = 45
+  }
+
+  light key {
+    type = point
+    at = [1.2, 2.0, 1.6]
+    intensity = 420
+    range = 7
+  }
+}

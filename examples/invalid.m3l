@@ -1,0 +1,17 @@
+scene "broken_demo" {
+  units = m
+  material coral {
+    base = "#ff7755"
+    roughness = 1.4 # intentionally invalid: the validator should explain why
+  }
+  box cube {
+    size = [1, -2, 1]
+    at = [0, 0, 0]
+    material = not_defined
+    surprise = 42
+  }
+  camera {
+    at = [3, 2, 3]
+    target = [0, 0, 0]
+  }
+}

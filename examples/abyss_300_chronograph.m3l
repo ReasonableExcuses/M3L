@@ -1,0 +1,1534 @@
+# ABYSS 300 — automatic diver chronograph concept, authored entirely in M3L.
+# 190 named components plus bounded link arrays create the layered dial, three
+# counters, luminous indices, crown, pushers, tapered strap, stitching, and clasp.
+# Nominal envelope is approximately 62.5 x 165.2 x 16.5 mm including hardware.
+scene "abyss_300_automatic_chronograph" {
+  units = "m"
+
+  material case_titanium {
+    base = "#9eaab4"
+    roughness = 0.26
+    metallic = 0.94
+    surface = "brushed_metal"
+    texture_resolution = 128
+  }
+
+  material black_ceramic {
+    base = "#121a23"
+    roughness = 0.22
+    metallic = 0.38
+    surface = "ceramic_glaze"
+    texture_resolution = 128
+  }
+
+  material dial_enamel {
+    base = "#051a30"
+    roughness = 0.24
+    metallic = 0.10
+    clearcoat = 0.62
+    clearcoat_roughness = 0.08
+    surface = "ceramic_glaze"
+    texture_resolution = 128
+  }
+
+  material bracelet_rubber {
+    base = "#15191c"
+    roughness = 0.78
+    metallic = 0.02
+    surface = "rubber"
+    texture_resolution = 128
+  }
+
+  material champagne_steel {
+    base = "#c5a76d"
+    roughness = 0.29
+    metallic = 0.86
+    surface = "anodized_metal"
+    texture_resolution = 128
+  }
+
+  material luminous {
+    base = "#d9e4cf"
+    roughness = 0.31
+    metallic = 0.18
+    emissive = "#8ba991"
+  }
+
+  material vermilion {
+    base = "#e24b2f"
+    roughness = 0.3
+    metallic = 0.68
+    surface = "anodized_metal"
+    texture_resolution = 128
+  }
+
+  material crystal {
+    base = "#ffffff"
+    roughness = 0.018
+    metallic = 0.0
+    transmission = 0.98
+    ior = 1.52
+    clearcoat = 0.05
+    clearcoat_roughness = 0.02
+  }
+
+  array upper_ribbed_links {
+    shape = "box"
+    counts = [3, 1, 14]
+    step = [0.0054, 0.0, 0.0037]
+    at = [-0.0054, -0.00030000000000000003, 0.03]
+    size = [0.0043, 0.001, 0.0012000000000000001]
+    material = "black_ceramic"
+  }
+
+  array lower_ribbed_links {
+    shape = "box"
+    counts = [3, 1, 14]
+    step = [0.0054, 0.0, -0.0037]
+    at = [-0.0054, -0.00030000000000000003, -0.03]
+    size = [0.0043, 0.001, 0.0012000000000000001]
+    material = "black_ceramic"
+  }
+
+  revolve mid_case {
+    profile = [[0.0205, -0.0058000000000000005], [0.0245, -0.0072], [0.026400000000000003, -0.0054], [0.027200000000000002, -0.0025000000000000005], [0.027200000000000002, 0.0032], [0.026000000000000002, 0.005600000000000001], [0.0236, 0.0068000000000000005], [0.021400000000000002, 0.0058000000000000005], [0.0205, 0.004]]
+    segments = 128
+    material = "case_titanium"
+  }
+
+  cylinder exhibition_back {
+    radius = 0.0207
+    height = 0.0012000000000000001
+    at = [0.0, -0.006600000000000001, 0.0]
+    material = "black_ceramic"
+    segments = 128
+  }
+  cylinder caseback_sapphire {
+    radius = 0.0198
+    height = 0.0002
+    at = [0, -0.00725, 0]
+    material = "crystal"
+    segments = 128
+  }
+  cylinder movement_plate {
+    radius = 0.0193
+    height = 0.0004
+    at = [0, -0.0075, 0]
+    material = "black_ceramic"
+    segments = 96
+  }
+  cylinder barrel_gear {
+    radius = 0.007
+    height = 0.00035
+    at = [-0.006, -0.00775, 0.001]
+    material = "champagne_steel"
+    segments = 48
+  }
+  cylinder escapement_gear {
+    radius = 0.0045
+    height = 0.00035
+    at = [0.008, -0.00775, 0.004]
+    material = "case_titanium"
+    segments = 40
+  }
+  cylinder balance_wheel {
+    radius = 0.006
+    height = 0.00035
+    at = [0.003, -0.00775, -0.008]
+    material = "champagne_steel"
+    segments = 48
+  }
+  extrude movement_rotor {
+    profile = [[-0.003, 0.016], [0.003, 0.016], [0.004, 0.003], [0.009, -0.006], [0.008, -0.012], [0.003, -0.016], [-0.004, -0.015], [-0.009, -0.011], [-0.010, -0.006], [-0.005, 0], [-0.003, 0.005]]
+    depth = 0.00035
+    at = [0, -0.0081, 0]
+    rotate = [0, 24, 0]
+    material = "champagne_steel"
+  }
+  cylinder rotor_bearing {
+    radius = 0.0025
+    height = 0.0005
+    at = [0, -0.00835, 0]
+    material = "vermilion"
+    segments = 32
+  }
+
+  revolve caseback_gasket {
+    profile = [[0.020200000000000003, -0.0006000000000000001], [0.0222, -0.0006000000000000001], [0.0222, 0.0006000000000000001], [0.020200000000000003, 0.0006000000000000001]]
+    segments = 128
+    at = [0.0, -0.006900000000000001, 0.0]
+    material = "vermilion"
+  }
+
+  revolve caseback_retainer {
+    profile = [[0.0206, -0.0005], [0.0233, -0.0005], [0.0233, 0.0005], [0.0206, 0.0005]]
+    segments = 128
+    at = [0.0, -0.0075, 0.0]
+    material = "champagne_steel"
+  }
+
+  revolve bezel_carrier {
+    profile = [[0.024, -0.0009], [0.027900000000000005, -0.0009], [0.027900000000000005, 0.0009], [0.024, 0.0009]]
+    segments = 128
+    at = [0.0, 0.006500000000000001, 0.0]
+    material = "black_ceramic"
+  }
+
+  revolve bezel_outer_lip {
+    profile = [[0.025300000000000003, -0.0006000000000000001], [0.0282, -0.0006000000000000001], [0.0282, 0.0006000000000000001], [0.025300000000000003, 0.0006000000000000001]]
+    segments = 128
+    at = [0.0, 0.0074, 0.0]
+    material = "case_titanium"
+  }
+
+  revolve bezel_insert {
+    profile = [[0.025800000000000003, -0.00030000000000000003], [0.027600000000000003, -0.00030000000000000003], [0.027600000000000003, 0.00030000000000000003], [0.025800000000000003, 0.00030000000000000003]]
+    segments = 128
+    at = [0.0, 0.0079, 0.0]
+    material = "dial_enamel"
+  }
+
+  revolve inner_chapter_ring {
+    profile = [[0.020200000000000003, -0.0004], [0.0217, -0.0004], [0.0217, 0.0004], [0.020200000000000003, 0.0004]]
+    segments = 128
+    at = [0.0, 0.0057, 0.0]
+    material = "champagne_steel"
+  }
+
+  cylinder sapphire_crystal {
+    radius = 0.0241
+    height = 0.0002
+    at = [0, 0.0074, 0]
+    material = "crystal"
+    segments = 128
+  }
+
+  cylinder dial_plate {
+    radius = 0.0211
+    height = 0.0009
+    at = [0.0, 0.0048000000000000004, 0.0]
+    material = "dial_enamel"
+    segments = 128
+  }
+
+  cylinder subdial_30min_face {
+    radius = 0.0046
+    height = 0.00030000000000000003
+    at = [0.009, 0.0055000000000000005, 0.0]
+    material = "black_ceramic"
+    segments = 64
+  }
+
+  revolve subdial_30min_rim {
+    profile = [[0.0039000000000000003, -0.00030000000000000003], [0.0047, -0.00030000000000000003], [0.0047, 0.00030000000000000003], [0.0039000000000000003, 0.00030000000000000003]]
+    segments = 64
+    at = [0.009, 0.0058000000000000005, 0.0]
+    material = "champagne_steel"
+  }
+
+  cylinder subdial_12hour_face {
+    radius = 0.0046
+    height = 0.00030000000000000003
+    at = [0.0, 0.0055000000000000005, -0.009300000000000001]
+    material = "black_ceramic"
+    segments = 64
+  }
+
+  revolve subdial_12hour_rim {
+    profile = [[0.0039000000000000003, -0.00030000000000000003], [0.0047, -0.00030000000000000003], [0.0047, 0.00030000000000000003], [0.0039000000000000003, 0.00030000000000000003]]
+    segments = 64
+    at = [0.0, 0.0058000000000000005, -0.009300000000000001]
+    material = "champagne_steel"
+  }
+
+  cylinder subdial_seconds_face {
+    radius = 0.0046
+    height = 0.00030000000000000003
+    at = [-0.009, 0.0055000000000000005, 0.0]
+    material = "black_ceramic"
+    segments = 64
+  }
+
+  revolve subdial_seconds_rim {
+    profile = [[0.0039000000000000003, -0.00030000000000000003], [0.0047, -0.00030000000000000003], [0.0047, 0.00030000000000000003], [0.0039000000000000003, 0.00030000000000000003]]
+    segments = 64
+    at = [-0.009, 0.0058000000000000005, 0.0]
+    material = "champagne_steel"
+  }
+
+  extrude lug_upper_left {
+    profile = [[-0.0035, -0.001], [0.0035, -0.001], [0.0022, 0.014], [-0.0022, 0.014]]
+    depth = 0.0046
+    at = [-0.0137, -0.003, 0.0273]
+    material = "case_titanium"
+  }
+
+  extrude lug_upper_right {
+    profile = [[-0.0035, -0.001], [0.0035, -0.001], [0.0022, 0.014], [-0.0022, 0.014]]
+    depth = 0.0046
+    at = [0.0137, -0.003, 0.0273]
+    material = "case_titanium"
+  }
+
+  extrude lug_lower_left {
+    profile = [[-0.0035, 0.001], [0.0035, 0.001], [0.0022, -0.014], [-0.0022, -0.014]]
+    depth = 0.0046
+    at = [-0.0137, -0.003, -0.0273]
+    material = "case_titanium"
+  }
+
+  extrude lug_lower_right {
+    profile = [[-0.0035, 0.001], [0.0035, 0.001], [0.0022, -0.014], [-0.0022, -0.014]]
+    depth = 0.0046
+    at = [0.0137, -0.003, -0.0273]
+    material = "case_titanium"
+  }
+
+  extrude upper_strap {
+    profile = [[-0.011200000000000002, 0.0245], [0.011200000000000002, 0.0245], [0.009800000000000001, 0.07900000000000001], [-0.009800000000000001, 0.07900000000000001]]
+    depth = 0.0046
+    at = [0.0, -0.0055000000000000005, 0.0]
+    material = "bracelet_rubber"
+  }
+
+  extrude lower_strap {
+    profile = [[-0.011200000000000002, -0.0245], [0.011200000000000002, -0.0245], [0.009800000000000001, -0.07900000000000001], [-0.009800000000000001, -0.07900000000000001]]
+    depth = 0.0046
+    at = [0.0, -0.0055000000000000005, 0.0]
+    material = "bracelet_rubber"
+  }
+
+  box upper_strap_spine {
+    size = [0.005000000000000001, 0.0008, 0.04000000000000001]
+    at = [0.0, -0.0002, 0.0505]
+    material = "black_ceramic"
+  }
+
+  box lower_strap_spine {
+    size = [0.005000000000000001, 0.0008, 0.04000000000000001]
+    at = [0.0, -0.0002, -0.0505]
+    material = "black_ceramic"
+  }
+
+  cylinder crown_neck {
+    radius = 0.002
+    height = 0.005000000000000001
+    at = [0.0286, 0.0, 0.0]
+    rotate = [0, 0, 90]
+    material = "black_ceramic"
+    segments = 48
+  }
+
+  cylinder crown_cap {
+    radius = 0.0026
+    height = 0.0018
+    at = [0.031900000000000005, 0.0, 0.0]
+    rotate = [0, 0, 90]
+    material = "case_titanium"
+    segments = 48
+  }
+
+  cylinder crown_center {
+    radius = 0.0016
+    height = 0.002
+    at = [0.0333, 0.0, 0.0]
+    rotate = [0, 0, 90]
+    material = "black_ceramic"
+    segments = 48
+  }
+
+  cylinder pusher_start {
+    radius = 0.0012000000000000001
+    height = 0.0044
+    at = [0.0294, 0.0012000000000000001, 0.009]
+    rotate = [0, 0, 90]
+    material = "champagne_steel"
+    segments = 32
+  }
+
+  cylinder pusher_start_cap {
+    radius = 0.0013
+    height = 0.001
+    at = [0.032, 0.0012000000000000001, 0.009]
+    rotate = [0, 0, 90]
+    material = "vermilion"
+    segments = 32
+  }
+
+  cylinder pusher_reset {
+    radius = 0.0012000000000000001
+    height = 0.0044
+    at = [0.0294, 0.0012000000000000001, -0.009]
+    rotate = [0, 0, 90]
+    material = "champagne_steel"
+    segments = 32
+  }
+
+  cylinder pusher_reset_cap {
+    radius = 0.0013
+    height = 0.001
+    at = [0.032, 0.0012000000000000001, -0.009]
+    rotate = [0, 0, 90]
+    material = "vermilion"
+    segments = 32
+  }
+
+  box upper_buckle_plate {
+    size = [0.0154, 0.0016, 0.0072]
+    at = [0.0, -0.0006000000000000001, 0.07900000000000001]
+    material = "case_titanium"
+  }
+
+  box buckle_crossbar {
+    size = [0.013500000000000002, 0.002, 0.0012000000000000001]
+    at = [0.0, -0.0002, 0.0815]
+    material = "champagne_steel"
+  }
+
+  box buckle_tongue {
+    size = [0.001, 0.0014000000000000002, 0.0082]
+    at = [0.0, 0.00030000000000000003, 0.07730000000000001]
+    material = "champagne_steel"
+  }
+
+  box lower_clasp_plate {
+    size = [0.0154, 0.0016, 0.0072]
+    at = [0.0, -0.0006000000000000001, -0.07900000000000001]
+    material = "case_titanium"
+  }
+
+  box hour_marker_01_frame {
+    size = [0.0012000000000000001, 0.0004, 0.004200000000000001]
+    at = [0.0, 0.0058000000000000005, 0.0188]
+    rotate = [0, 0, 0]
+    material = "champagne_steel"
+  }
+
+  box hour_marker_01_lume {
+    size = [0.0006000000000000001, 0.0004, 0.0034000000000000002]
+    at = [0.0, 0.006200000000000001, 0.0188]
+    rotate = [0, 0, 0]
+    material = "luminous"
+  }
+
+  box hour_marker_02_frame {
+    size = [0.0012000000000000001, 0.0004, 0.0032]
+    at = [0.0094, 0.0058000000000000005, 0.016281]
+    rotate = [0, 30, 0]
+    material = "champagne_steel"
+  }
+
+  box hour_marker_02_lume {
+    size = [0.0006000000000000001, 0.0004, 0.0024000000000000002]
+    at = [0.0094, 0.006200000000000001, 0.016281]
+    rotate = [0, 30, 0]
+    material = "luminous"
+  }
+
+  box hour_marker_03_frame {
+    size = [0.0012000000000000001, 0.0004, 0.0032]
+    at = [0.016281, 0.0058000000000000005, 0.0094]
+    rotate = [0, 60, 0]
+    material = "champagne_steel"
+  }
+
+  box hour_marker_03_lume {
+    size = [0.0006000000000000001, 0.0004, 0.0024000000000000002]
+    at = [0.016281, 0.006200000000000001, 0.0094]
+    rotate = [0, 60, 0]
+    material = "luminous"
+  }
+
+  box hour_marker_04_frame {
+    size = [0.0012000000000000001, 0.0004, 0.004200000000000001]
+    at = [0.0188, 0.0058000000000000005, 0.0]
+    rotate = [0, 90, 0]
+    material = "champagne_steel"
+  }
+
+  box hour_marker_04_lume {
+    size = [0.0006000000000000001, 0.0004, 0.0034000000000000002]
+    at = [0.0188, 0.006200000000000001, 0.0]
+    rotate = [0, 90, 0]
+    material = "luminous"
+  }
+
+  box hour_marker_05_frame {
+    size = [0.0012000000000000001, 0.0004, 0.0032]
+    at = [0.016281, 0.0058000000000000005, -0.0094]
+    rotate = [0, 120, 0]
+    material = "champagne_steel"
+  }
+
+  box hour_marker_05_lume {
+    size = [0.0006000000000000001, 0.0004, 0.0024000000000000002]
+    at = [0.016281, 0.006200000000000001, -0.0094]
+    rotate = [0, 120, 0]
+    material = "luminous"
+  }
+
+  box hour_marker_06_frame {
+    size = [0.0012000000000000001, 0.0004, 0.0032]
+    at = [0.0094, 0.0058000000000000005, -0.016281]
+    rotate = [0, 150, 0]
+    material = "champagne_steel"
+  }
+
+  box hour_marker_06_lume {
+    size = [0.0006000000000000001, 0.0004, 0.0024000000000000002]
+    at = [0.0094, 0.006200000000000001, -0.016281]
+    rotate = [0, 150, 0]
+    material = "luminous"
+  }
+
+  box hour_marker_07_frame {
+    size = [0.0012000000000000001, 0.0004, 0.004200000000000001]
+    at = [0.0, 0.0058000000000000005, -0.0188]
+    rotate = [0, 180, 0]
+    material = "champagne_steel"
+  }
+
+  box hour_marker_07_lume {
+    size = [0.0006000000000000001, 0.0004, 0.0034000000000000002]
+    at = [0.0, 0.006200000000000001, -0.0188]
+    rotate = [0, 180, 0]
+    material = "luminous"
+  }
+
+  box hour_marker_08_frame {
+    size = [0.0012000000000000001, 0.0004, 0.0032]
+    at = [-0.0094, 0.0058000000000000005, -0.016281]
+    rotate = [0, 210, 0]
+    material = "champagne_steel"
+  }
+
+  box hour_marker_08_lume {
+    size = [0.0006000000000000001, 0.0004, 0.0024000000000000002]
+    at = [-0.0094, 0.006200000000000001, -0.016281]
+    rotate = [0, 210, 0]
+    material = "luminous"
+  }
+
+  box hour_marker_09_frame {
+    size = [0.0012000000000000001, 0.0004, 0.0032]
+    at = [-0.016281, 0.0058000000000000005, -0.0094]
+    rotate = [0, 240, 0]
+    material = "champagne_steel"
+  }
+
+  box hour_marker_09_lume {
+    size = [0.0006000000000000001, 0.0004, 0.0024000000000000002]
+    at = [-0.016281, 0.006200000000000001, -0.0094]
+    rotate = [0, 240, 0]
+    material = "luminous"
+  }
+
+  box hour_marker_10_frame {
+    size = [0.0012000000000000001, 0.0004, 0.004200000000000001]
+    at = [-0.0188, 0.0058000000000000005, 0.0]
+    rotate = [0, 270, 0]
+    material = "champagne_steel"
+  }
+
+  box hour_marker_10_lume {
+    size = [0.0006000000000000001, 0.0004, 0.0034000000000000002]
+    at = [-0.0188, 0.006200000000000001, 0.0]
+    rotate = [0, 270, 0]
+    material = "luminous"
+  }
+
+  box hour_marker_11_frame {
+    size = [0.0012000000000000001, 0.0004, 0.0032]
+    at = [-0.016281, 0.0058000000000000005, 0.0094]
+    rotate = [0, 300, 0]
+    material = "champagne_steel"
+  }
+
+  box hour_marker_11_lume {
+    size = [0.0006000000000000001, 0.0004, 0.0024000000000000002]
+    at = [-0.016281, 0.006200000000000001, 0.0094]
+    rotate = [0, 300, 0]
+    material = "luminous"
+  }
+
+  box hour_marker_12_frame {
+    size = [0.0012000000000000001, 0.0004, 0.0032]
+    at = [-0.0094, 0.0058000000000000005, 0.016281]
+    rotate = [0, 330, 0]
+    material = "champagne_steel"
+  }
+
+  box hour_marker_12_lume {
+    size = [0.0006000000000000001, 0.0004, 0.0024000000000000002]
+    at = [-0.0094, 0.006200000000000001, 0.016281]
+    rotate = [0, 330, 0]
+    material = "luminous"
+  }
+
+  box minute_track_01 {
+    size = [0.00038, 0.00025, 0.0009]
+    at = [0.0, 0.0055000000000000005, 0.022900000000000004]
+    rotate = [0, 0, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_track_02 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.0023940000000000003, 0.0055000000000000005, 0.022775000000000004]
+    rotate = [0, 6, 0]
+    material = "luminous"
+  }
+
+  box minute_track_03 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.0047610000000000005, 0.0055000000000000005, 0.022400000000000003]
+    rotate = [0, 12, 0]
+    material = "luminous"
+  }
+
+  box minute_track_04 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.007076000000000001, 0.0055000000000000005, 0.021779000000000003]
+    rotate = [0, 18, 0]
+    material = "luminous"
+  }
+
+  box minute_track_05 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.009314000000000001, 0.0055000000000000005, 0.02092]
+    rotate = [0, 24, 0]
+    material = "luminous"
+  }
+
+  box minute_track_06 {
+    size = [0.00038, 0.00025, 0.0009]
+    at = [0.011450000000000002, 0.0055000000000000005, 0.019832000000000002]
+    rotate = [0, 30, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_track_07 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.01346, 0.0055000000000000005, 0.018526]
+    rotate = [0, 36, 0]
+    material = "luminous"
+  }
+
+  box minute_track_08 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.015323000000000002, 0.0055000000000000005, 0.017018000000000002]
+    rotate = [0, 42, 0]
+    material = "luminous"
+  }
+
+  box minute_track_09 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.017018000000000002, 0.0055000000000000005, 0.015323000000000002]
+    rotate = [0, 48, 0]
+    material = "luminous"
+  }
+
+  box minute_track_10 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.018526, 0.0055000000000000005, 0.01346]
+    rotate = [0, 54, 0]
+    material = "luminous"
+  }
+
+  box minute_track_11 {
+    size = [0.00038, 0.00025, 0.0009]
+    at = [0.019832000000000002, 0.0055000000000000005, 0.011450000000000002]
+    rotate = [0, 60, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_track_12 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.02092, 0.0055000000000000005, 0.009314000000000001]
+    rotate = [0, 66, 0]
+    material = "luminous"
+  }
+
+  box minute_track_13 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.021779000000000003, 0.0055000000000000005, 0.007076000000000001]
+    rotate = [0, 72, 0]
+    material = "luminous"
+  }
+
+  box minute_track_14 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.022400000000000003, 0.0055000000000000005, 0.0047610000000000005]
+    rotate = [0, 78, 0]
+    material = "luminous"
+  }
+
+  box minute_track_15 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.022775000000000004, 0.0055000000000000005, 0.0023940000000000003]
+    rotate = [0, 84, 0]
+    material = "luminous"
+  }
+
+  box minute_track_16 {
+    size = [0.00038, 0.00025, 0.0009]
+    at = [0.022900000000000004, 0.0055000000000000005, 0.0]
+    rotate = [0, 90, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_track_17 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.022775000000000004, 0.0055000000000000005, -0.0023940000000000003]
+    rotate = [0, 96, 0]
+    material = "luminous"
+  }
+
+  box minute_track_18 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.022400000000000003, 0.0055000000000000005, -0.0047610000000000005]
+    rotate = [0, 102, 0]
+    material = "luminous"
+  }
+
+  box minute_track_19 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.021779000000000003, 0.0055000000000000005, -0.007076000000000001]
+    rotate = [0, 108, 0]
+    material = "luminous"
+  }
+
+  box minute_track_20 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.02092, 0.0055000000000000005, -0.009314000000000001]
+    rotate = [0, 114, 0]
+    material = "luminous"
+  }
+
+  box minute_track_21 {
+    size = [0.00038, 0.00025, 0.0009]
+    at = [0.019832000000000002, 0.0055000000000000005, -0.011450000000000002]
+    rotate = [0, 120, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_track_22 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.018526, 0.0055000000000000005, -0.01346]
+    rotate = [0, 126, 0]
+    material = "luminous"
+  }
+
+  box minute_track_23 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.017018000000000002, 0.0055000000000000005, -0.015323000000000002]
+    rotate = [0, 132, 0]
+    material = "luminous"
+  }
+
+  box minute_track_24 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.015323000000000002, 0.0055000000000000005, -0.017018000000000002]
+    rotate = [0, 138, 0]
+    material = "luminous"
+  }
+
+  box minute_track_25 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.01346, 0.0055000000000000005, -0.018526]
+    rotate = [0, 144, 0]
+    material = "luminous"
+  }
+
+  box minute_track_26 {
+    size = [0.00038, 0.00025, 0.0009]
+    at = [0.011450000000000002, 0.0055000000000000005, -0.019832000000000002]
+    rotate = [0, 150, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_track_27 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.009314000000000001, 0.0055000000000000005, -0.02092]
+    rotate = [0, 156, 0]
+    material = "luminous"
+  }
+
+  box minute_track_28 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.007076000000000001, 0.0055000000000000005, -0.021779000000000003]
+    rotate = [0, 162, 0]
+    material = "luminous"
+  }
+
+  box minute_track_29 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.0047610000000000005, 0.0055000000000000005, -0.022400000000000003]
+    rotate = [0, 168, 0]
+    material = "luminous"
+  }
+
+  box minute_track_30 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [0.0023940000000000003, 0.0055000000000000005, -0.022775000000000004]
+    rotate = [0, 174, 0]
+    material = "luminous"
+  }
+
+  box minute_track_31 {
+    size = [0.00038, 0.00025, 0.0009]
+    at = [0.0, 0.0055000000000000005, -0.022900000000000004]
+    rotate = [0, 180, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_track_32 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.0023940000000000003, 0.0055000000000000005, -0.022775000000000004]
+    rotate = [0, 186, 0]
+    material = "luminous"
+  }
+
+  box minute_track_33 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.0047610000000000005, 0.0055000000000000005, -0.022400000000000003]
+    rotate = [0, 192, 0]
+    material = "luminous"
+  }
+
+  box minute_track_34 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.007076000000000001, 0.0055000000000000005, -0.021779000000000003]
+    rotate = [0, 198, 0]
+    material = "luminous"
+  }
+
+  box minute_track_35 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.009314000000000001, 0.0055000000000000005, -0.02092]
+    rotate = [0, 204, 0]
+    material = "luminous"
+  }
+
+  box minute_track_36 {
+    size = [0.00038, 0.00025, 0.0009]
+    at = [-0.011450000000000002, 0.0055000000000000005, -0.019832000000000002]
+    rotate = [0, 210, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_track_37 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.01346, 0.0055000000000000005, -0.018526]
+    rotate = [0, 216, 0]
+    material = "luminous"
+  }
+
+  box minute_track_38 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.015323000000000002, 0.0055000000000000005, -0.017018000000000002]
+    rotate = [0, 222, 0]
+    material = "luminous"
+  }
+
+  box minute_track_39 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.017018000000000002, 0.0055000000000000005, -0.015323000000000002]
+    rotate = [0, 228, 0]
+    material = "luminous"
+  }
+
+  box minute_track_40 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.018526, 0.0055000000000000005, -0.01346]
+    rotate = [0, 234, 0]
+    material = "luminous"
+  }
+
+  box minute_track_41 {
+    size = [0.00038, 0.00025, 0.0009]
+    at = [-0.019832000000000002, 0.0055000000000000005, -0.011450000000000002]
+    rotate = [0, 240, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_track_42 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.02092, 0.0055000000000000005, -0.009314000000000001]
+    rotate = [0, 246, 0]
+    material = "luminous"
+  }
+
+  box minute_track_43 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.021779000000000003, 0.0055000000000000005, -0.007076000000000001]
+    rotate = [0, 252, 0]
+    material = "luminous"
+  }
+
+  box minute_track_44 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.022400000000000003, 0.0055000000000000005, -0.0047610000000000005]
+    rotate = [0, 258, 0]
+    material = "luminous"
+  }
+
+  box minute_track_45 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.022775000000000004, 0.0055000000000000005, -0.0023940000000000003]
+    rotate = [0, 264, 0]
+    material = "luminous"
+  }
+
+  box minute_track_46 {
+    size = [0.00038, 0.00025, 0.0009]
+    at = [-0.022900000000000004, 0.0055000000000000005, 0.0]
+    rotate = [0, 270, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_track_47 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.022775000000000004, 0.0055000000000000005, 0.0023940000000000003]
+    rotate = [0, 276, 0]
+    material = "luminous"
+  }
+
+  box minute_track_48 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.022400000000000003, 0.0055000000000000005, 0.0047610000000000005]
+    rotate = [0, 282, 0]
+    material = "luminous"
+  }
+
+  box minute_track_49 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.021779000000000003, 0.0055000000000000005, 0.007076000000000001]
+    rotate = [0, 288, 0]
+    material = "luminous"
+  }
+
+  box minute_track_50 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.02092, 0.0055000000000000005, 0.009314000000000001]
+    rotate = [0, 294, 0]
+    material = "luminous"
+  }
+
+  box minute_track_51 {
+    size = [0.00038, 0.00025, 0.0009]
+    at = [-0.019832000000000002, 0.0055000000000000005, 0.011450000000000002]
+    rotate = [0, 300, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_track_52 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.018526, 0.0055000000000000005, 0.01346]
+    rotate = [0, 306, 0]
+    material = "luminous"
+  }
+
+  box minute_track_53 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.017018000000000002, 0.0055000000000000005, 0.015323000000000002]
+    rotate = [0, 312, 0]
+    material = "luminous"
+  }
+
+  box minute_track_54 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.015323000000000002, 0.0055000000000000005, 0.017018000000000002]
+    rotate = [0, 318, 0]
+    material = "luminous"
+  }
+
+  box minute_track_55 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.01346, 0.0055000000000000005, 0.018526]
+    rotate = [0, 324, 0]
+    material = "luminous"
+  }
+
+  box minute_track_56 {
+    size = [0.00038, 0.00025, 0.0009]
+    at = [-0.011450000000000002, 0.0055000000000000005, 0.019832000000000002]
+    rotate = [0, 330, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_track_57 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.009314000000000001, 0.0055000000000000005, 0.02092]
+    rotate = [0, 336, 0]
+    material = "luminous"
+  }
+
+  box minute_track_58 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.007076000000000001, 0.0055000000000000005, 0.021779000000000003]
+    rotate = [0, 342, 0]
+    material = "luminous"
+  }
+
+  box minute_track_59 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.0047610000000000005, 0.0055000000000000005, 0.022400000000000003]
+    rotate = [0, 348, 0]
+    material = "luminous"
+  }
+
+  box minute_track_60 {
+    size = [0.00022000000000000003, 0.00025, 0.00052]
+    at = [-0.0023940000000000003, 0.0055000000000000005, 0.022775000000000004]
+    rotate = [0, 354, 0]
+    material = "luminous"
+  }
+
+  box minute_counter_tick_01 {
+    size = [0.00022000000000000003, 0.0002, 0.0006000000000000001]
+    at = [0.009, 0.006200000000000001, 0.0034000000000000002]
+    rotate = [0, 0, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_counter_tick_02 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [0.010700000000000001, 0.006200000000000001, 0.0029440000000000004]
+    rotate = [0, 30, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_counter_tick_03 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [0.011944000000000001, 0.006200000000000001, 0.0017000000000000001]
+    rotate = [0, 60, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_counter_tick_04 {
+    size = [0.00022000000000000003, 0.0002, 0.0006000000000000001]
+    at = [0.012400000000000001, 0.006200000000000001, 0.0]
+    rotate = [0, 90, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_counter_tick_05 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [0.011944000000000001, 0.006200000000000001, -0.0017000000000000001]
+    rotate = [0, 120, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_counter_tick_06 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [0.010700000000000001, 0.006200000000000001, -0.0029440000000000004]
+    rotate = [0, 150, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_counter_tick_07 {
+    size = [0.00022000000000000003, 0.0002, 0.0006000000000000001]
+    at = [0.009, 0.006200000000000001, -0.0034000000000000002]
+    rotate = [0, 180, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_counter_tick_08 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [0.0073, 0.006200000000000001, -0.0029440000000000004]
+    rotate = [0, 210, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_counter_tick_09 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [0.006056000000000001, 0.006200000000000001, -0.0017000000000000001]
+    rotate = [0, 240, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_counter_tick_10 {
+    size = [0.00022000000000000003, 0.0002, 0.0006000000000000001]
+    at = [0.005600000000000001, 0.006200000000000001, 0.0]
+    rotate = [0, 270, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_counter_tick_11 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [0.006056000000000001, 0.006200000000000001, 0.0017000000000000001]
+    rotate = [0, 300, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_counter_tick_12 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [0.0073, 0.006200000000000001, 0.0029440000000000004]
+    rotate = [0, 330, 0]
+    material = "champagne_steel"
+  }
+
+  box hours_counter_tick_01 {
+    size = [0.00022000000000000003, 0.0002, 0.0006000000000000001]
+    at = [0.0, 0.006200000000000001, -0.0059]
+    rotate = [0, 0, 0]
+    material = "champagne_steel"
+  }
+
+  box hours_counter_tick_02 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [0.0017000000000000001, 0.006200000000000001, -0.0063560000000000005]
+    rotate = [0, 30, 0]
+    material = "champagne_steel"
+  }
+
+  box hours_counter_tick_03 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [0.0029440000000000004, 0.006200000000000001, -0.0076]
+    rotate = [0, 60, 0]
+    material = "champagne_steel"
+  }
+
+  box hours_counter_tick_04 {
+    size = [0.00022000000000000003, 0.0002, 0.0006000000000000001]
+    at = [0.0034000000000000002, 0.006200000000000001, -0.009300000000000001]
+    rotate = [0, 90, 0]
+    material = "champagne_steel"
+  }
+
+  box hours_counter_tick_05 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [0.0029440000000000004, 0.006200000000000001, -0.011000000000000001]
+    rotate = [0, 120, 0]
+    material = "champagne_steel"
+  }
+
+  box hours_counter_tick_06 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [0.0017000000000000001, 0.006200000000000001, -0.012244]
+    rotate = [0, 150, 0]
+    material = "champagne_steel"
+  }
+
+  box hours_counter_tick_07 {
+    size = [0.00022000000000000003, 0.0002, 0.0006000000000000001]
+    at = [0.0, 0.006200000000000001, -0.012700000000000001]
+    rotate = [0, 180, 0]
+    material = "champagne_steel"
+  }
+
+  box hours_counter_tick_08 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [-0.0017000000000000001, 0.006200000000000001, -0.012244]
+    rotate = [0, 210, 0]
+    material = "champagne_steel"
+  }
+
+  box hours_counter_tick_09 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [-0.0029440000000000004, 0.006200000000000001, -0.011000000000000001]
+    rotate = [0, 240, 0]
+    material = "champagne_steel"
+  }
+
+  box hours_counter_tick_10 {
+    size = [0.00022000000000000003, 0.0002, 0.0006000000000000001]
+    at = [-0.0034000000000000002, 0.006200000000000001, -0.009300000000000001]
+    rotate = [0, 270, 0]
+    material = "champagne_steel"
+  }
+
+  box hours_counter_tick_11 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [-0.0029440000000000004, 0.006200000000000001, -0.0076]
+    rotate = [0, 300, 0]
+    material = "champagne_steel"
+  }
+
+  box hours_counter_tick_12 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [-0.0017000000000000001, 0.006200000000000001, -0.0063560000000000005]
+    rotate = [0, 330, 0]
+    material = "champagne_steel"
+  }
+
+  box seconds_counter_tick_01 {
+    size = [0.00022000000000000003, 0.0002, 0.0006000000000000001]
+    at = [-0.009, 0.006200000000000001, 0.0034000000000000002]
+    rotate = [0, 0, 0]
+    material = "champagne_steel"
+  }
+
+  box seconds_counter_tick_02 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [-0.0073, 0.006200000000000001, 0.0029440000000000004]
+    rotate = [0, 30, 0]
+    material = "champagne_steel"
+  }
+
+  box seconds_counter_tick_03 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [-0.006056000000000001, 0.006200000000000001, 0.0017000000000000001]
+    rotate = [0, 60, 0]
+    material = "champagne_steel"
+  }
+
+  box seconds_counter_tick_04 {
+    size = [0.00022000000000000003, 0.0002, 0.0006000000000000001]
+    at = [-0.005600000000000001, 0.006200000000000001, 0.0]
+    rotate = [0, 90, 0]
+    material = "champagne_steel"
+  }
+
+  box seconds_counter_tick_05 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [-0.006056000000000001, 0.006200000000000001, -0.0017000000000000001]
+    rotate = [0, 120, 0]
+    material = "champagne_steel"
+  }
+
+  box seconds_counter_tick_06 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [-0.0073, 0.006200000000000001, -0.0029440000000000004]
+    rotate = [0, 150, 0]
+    material = "champagne_steel"
+  }
+
+  box seconds_counter_tick_07 {
+    size = [0.00022000000000000003, 0.0002, 0.0006000000000000001]
+    at = [-0.009, 0.006200000000000001, -0.0034000000000000002]
+    rotate = [0, 180, 0]
+    material = "champagne_steel"
+  }
+
+  box seconds_counter_tick_08 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [-0.010700000000000001, 0.006200000000000001, -0.0029440000000000004]
+    rotate = [0, 210, 0]
+    material = "champagne_steel"
+  }
+
+  box seconds_counter_tick_09 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [-0.011944000000000001, 0.006200000000000001, -0.0017000000000000001]
+    rotate = [0, 240, 0]
+    material = "champagne_steel"
+  }
+
+  box seconds_counter_tick_10 {
+    size = [0.00022000000000000003, 0.0002, 0.0006000000000000001]
+    at = [-0.012400000000000001, 0.006200000000000001, 0.0]
+    rotate = [0, 270, 0]
+    material = "champagne_steel"
+  }
+
+  box seconds_counter_tick_11 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [-0.011944000000000001, 0.006200000000000001, 0.0017000000000000001]
+    rotate = [0, 300, 0]
+    material = "champagne_steel"
+  }
+
+  box seconds_counter_tick_12 {
+    size = [0.00022000000000000003, 0.0002, 0.00035000000000000005]
+    at = [-0.010700000000000001, 0.006200000000000001, 0.0029440000000000004]
+    rotate = [0, 330, 0]
+    material = "champagne_steel"
+  }
+
+  box minute_counter_hand {
+    size = [0.00028000000000000003, 0.00025, 0.0033000000000000004]
+    at = [0.010117000000000001, 0.006600000000000001, 0.0015370000000000002]
+    rotate = [0, 36, 0]
+    material = "luminous"
+  }
+
+  cylinder minute_counter_pivot {
+    radius = 0.0004
+    height = 0.00030000000000000003
+    at = [0.009, 0.0068000000000000005, 0.0]
+    material = "vermilion"
+    segments = 24
+  }
+
+  box hours_counter_hand {
+    size = [0.00028000000000000003, 0.00025, 0.0033000000000000004]
+    at = [-0.00109, 0.006600000000000001, -0.010856000000000001]
+    rotate = [0, 215, 0]
+    material = "luminous"
+  }
+
+  cylinder hours_counter_pivot {
+    radius = 0.0004
+    height = 0.00030000000000000003
+    at = [0.0, 0.0068000000000000005, -0.009300000000000001]
+    material = "vermilion"
+    segments = 24
+  }
+
+  box seconds_counter_hand {
+    size = [0.00028000000000000003, 0.00025, 0.0033000000000000004]
+    at = [-0.007779, 0.006600000000000001, -0.0014550000000000001]
+    rotate = [0, 140, 0]
+    material = "luminous"
+  }
+
+  cylinder seconds_counter_pivot {
+    radius = 0.0004
+    height = 0.00030000000000000003
+    at = [-0.009, 0.0068000000000000005, 0.0]
+    material = "vermilion"
+    segments = 24
+  }
+
+  box hour_hand {
+    size = [0.001, 0.00030000000000000003, 0.0082]
+    at = [0.003231, 0.006700000000000001, 0.002524]
+    rotate = [0, 52, 0]
+    material = "luminous"
+  }
+
+  box minute_hand {
+    size = [0.0007000000000000001, 0.00030000000000000003, 0.013200000000000002]
+    at = [-0.004063, 0.006700000000000001, -0.005201000000000001]
+    rotate = [0, 218, 0]
+    material = "luminous"
+  }
+
+  box chronograph_seconds_hand {
+    size = [0.00028000000000000003, 0.00030000000000000003, 0.017]
+    at = [0.001183, 0.006700000000000001, 0.008417]
+    rotate = [0, 8, 0]
+    material = "vermilion"
+  }
+
+  cylinder central_hand_stack {
+    radius = 0.001
+    height = 0.0006000000000000001
+    at = [0.0, 0.0070999999999999995, 0.0]
+    material = "champagne_steel"
+    segments = 32
+  }
+
+  cylinder central_jewel {
+    radius = 0.00045
+    height = 0.00030000000000000003
+    at = [0.0, 0.0075, 0.0]
+    material = "vermilion"
+    segments = 24
+  }
+
+  cylinder bezel_hash_00 {
+    radius = 0.00045
+    height = 0.00030000000000000003
+    at = [0.0, 0.0083, 0.0267]
+    material = "vermilion"
+    segments = 16
+  }
+
+  cylinder bezel_hash_05 {
+    radius = 0.00028000000000000003
+    height = 0.00030000000000000003
+    at = [0.01335, 0.0083, 0.023123]
+    material = "luminous"
+    segments = 16
+  }
+
+  cylinder bezel_hash_10 {
+    radius = 0.00028000000000000003
+    height = 0.00030000000000000003
+    at = [0.023123, 0.0083, 0.01335]
+    material = "luminous"
+    segments = 16
+  }
+
+  cylinder bezel_hash_15 {
+    radius = 0.00028000000000000003
+    height = 0.00030000000000000003
+    at = [0.0267, 0.0083, 0.0]
+    material = "luminous"
+    segments = 16
+  }
+
+  cylinder bezel_hash_20 {
+    radius = 0.00028000000000000003
+    height = 0.00030000000000000003
+    at = [0.023123, 0.0083, -0.01335]
+    material = "luminous"
+    segments = 16
+  }
+
+  cylinder bezel_hash_25 {
+    radius = 0.00028000000000000003
+    height = 0.00030000000000000003
+    at = [0.01335, 0.0083, -0.023123]
+    material = "luminous"
+    segments = 16
+  }
+
+  cylinder bezel_hash_30 {
+    radius = 0.00028000000000000003
+    height = 0.00030000000000000003
+    at = [0.0, 0.0083, -0.0267]
+    material = "luminous"
+    segments = 16
+  }
+
+  cylinder bezel_hash_35 {
+    radius = 0.00028000000000000003
+    height = 0.00030000000000000003
+    at = [-0.01335, 0.0083, -0.023123]
+    material = "luminous"
+    segments = 16
+  }
+
+  cylinder bezel_hash_40 {
+    radius = 0.00028000000000000003
+    height = 0.00030000000000000003
+    at = [-0.023123, 0.0083, -0.01335]
+    material = "luminous"
+    segments = 16
+  }
+
+  cylinder bezel_hash_45 {
+    radius = 0.00028000000000000003
+    height = 0.00030000000000000003
+    at = [-0.0267, 0.0083, 0.0]
+    material = "luminous"
+    segments = 16
+  }
+
+  cylinder bezel_hash_50 {
+    radius = 0.00028000000000000003
+    height = 0.00030000000000000003
+    at = [-0.023123, 0.0083, 0.01335]
+    material = "luminous"
+    segments = 16
+  }
+
+  cylinder bezel_hash_55 {
+    radius = 0.00028000000000000003
+    height = 0.00030000000000000003
+    at = [-0.01335, 0.0083, 0.023123]
+    material = "luminous"
+    segments = 16
+  }
+
+  box crown_knurl_01 {
+    size = [0.002, 0.0005, 0.00030000000000000003]
+    at = [0.0332, 0.0, 0.0018]
+    rotate = [0, 0, 0]
+    material = "champagne_steel"
+  }
+
+  box crown_knurl_02 {
+    size = [0.002, 0.0005, 0.00030000000000000003]
+    at = [0.0332, 0.0009, 0.001559]
+    rotate = [30, 0, 0]
+    material = "champagne_steel"
+  }
+
+  box crown_knurl_03 {
+    size = [0.002, 0.0005, 0.00030000000000000003]
+    at = [0.0332, 0.001559, 0.0009]
+    rotate = [60, 0, 0]
+    material = "champagne_steel"
+  }
+
+  box crown_knurl_04 {
+    size = [0.002, 0.0005, 0.00030000000000000003]
+    at = [0.0332, 0.0018, 0.0]
+    rotate = [90, 0, 0]
+    material = "champagne_steel"
+  }
+
+  box crown_knurl_05 {
+    size = [0.002, 0.0005, 0.00030000000000000003]
+    at = [0.0332, 0.001559, -0.0009]
+    rotate = [120, 0, 0]
+    material = "champagne_steel"
+  }
+
+  box crown_knurl_06 {
+    size = [0.002, 0.0005, 0.00030000000000000003]
+    at = [0.0332, 0.0009, -0.001559]
+    rotate = [150, 0, 0]
+    material = "champagne_steel"
+  }
+
+  box crown_knurl_07 {
+    size = [0.002, 0.0005, 0.00030000000000000003]
+    at = [0.0332, 0.0, -0.0018]
+    rotate = [180, 0, 0]
+    material = "champagne_steel"
+  }
+
+  box crown_knurl_08 {
+    size = [0.002, 0.0005, 0.00030000000000000003]
+    at = [0.0332, -0.0009, -0.001559]
+    rotate = [210, 0, 0]
+    material = "champagne_steel"
+  }
+
+  box crown_knurl_09 {
+    size = [0.002, 0.0005, 0.00030000000000000003]
+    at = [0.0332, -0.001559, -0.0009]
+    rotate = [240, 0, 0]
+    material = "champagne_steel"
+  }
+
+  box crown_knurl_10 {
+    size = [0.002, 0.0005, 0.00030000000000000003]
+    at = [0.0332, -0.0018, 0.0]
+    rotate = [270, 0, 0]
+    material = "champagne_steel"
+  }
+
+  box crown_knurl_11 {
+    size = [0.002, 0.0005, 0.00030000000000000003]
+    at = [0.0332, -0.001559, 0.0009]
+    rotate = [300, 0, 0]
+    material = "champagne_steel"
+  }
+
+  box crown_knurl_12 {
+    size = [0.002, 0.0005, 0.00030000000000000003]
+    at = [0.0332, -0.0009, 0.001559]
+    rotate = [330, 0, 0]
+    material = "champagne_steel"
+  }
+
+  camera {
+    at = [0.04, 0.21, 0.06]
+    target = [0.0, 0.0, 0.0]
+    fov = 42
+    near = 0.001
+    far = 5.0
+  }
+
+  light key {
+    type = "point"
+    at = [0.08000000000000002, 0.13999999999999999, 0.06999999999999999]
+    color = "#fff0d9"
+    intensity = 1.2
+    range = 0.5
+  }
+
+  light fill {
+    type = "point"
+    at = [-0.1, 0.09000000000000001, 0.04000000000000001]
+    color = "#bad8f0"
+    intensity = 0.7
+    range = 0.5
+  }
+
+  light rim {
+    type = "point"
+    at = [0.0, 0.12, -0.1]
+    color = "#f0a56f"
+    intensity = 1.0
+    range = 0.5
+  }
+
+}

@@ -1,0 +1,135 @@
+scene "friendly_robot" {
+  units = m
+
+  material shell {
+    base = "#4a93c9"
+    roughness = 0.34
+    metallic = 0.18
+  }
+  material dark {
+    base = "#263440"
+    roughness = 0.45
+    metallic = 0.35
+  }
+  material accent {
+    base = "#f4bd50"
+    roughness = 0.4
+    metallic = 0.05
+  }
+  material lens {
+    base = "#bff6ec"
+    roughness = 0.16
+    metallic = 0.0
+    emissive = "#1b665b"
+  }
+
+  box ground {
+    size = [5, 0.08, 5]
+    at = [0, -0.04, 0]
+    material = dark
+  }
+  box body {
+    size = [0.58, 0.66, 0.32]
+    at = [0, 0.93, 0]
+    material = shell
+    rotate = [0, -4, 0]
+  }
+  sphere head {
+    radius = 0.28
+    segments = 32
+    rings = 20
+    at = [0, 1.52, 0]
+    scale = [1.05, 0.95, 0.9]
+    material = shell
+  }
+  sphere left_eye {
+    radius = 0.055
+    at = [-0.105, 1.56, 0.235]
+    material = lens
+  }
+  sphere right_eye {
+    radius = 0.055
+    at = [0.105, 1.56, 0.235]
+    material = lens
+  }
+  cylinder neck {
+    radius = 0.12
+    height = 0.12
+    at = [0, 1.27, 0]
+    material = dark
+  }
+  cylinder left_arm {
+    radius = 0.075
+    height = 0.48
+    at = [-0.39, 0.98, 0]
+    rotate = [0, 0, -18]
+    material = dark
+  }
+  cylinder right_arm {
+    radius = 0.075
+    height = 0.48
+    at = [0.39, 0.98, 0]
+    rotate = [0, 0, 18]
+    material = dark
+  }
+  sphere left_hand {
+    radius = 0.095
+    at = [-0.465, 0.74, 0]
+    material = accent
+  }
+  sphere right_hand {
+    radius = 0.095
+    at = [0.465, 0.74, 0]
+    material = accent
+  }
+  cylinder left_leg {
+    radius = 0.09
+    height = 0.42
+    at = [-0.16, 0.39, 0]
+    material = dark
+  }
+  cylinder right_leg {
+    radius = 0.09
+    height = 0.42
+    at = [0.16, 0.39, 0]
+    material = dark
+  }
+  box left_foot {
+    size = [0.24, 0.10, 0.34]
+    at = [-0.16, 0.13, 0.05]
+    material = accent
+  }
+  box right_foot {
+    size = [0.24, 0.10, 0.34]
+    at = [0.16, 0.13, 0.05]
+    material = accent
+  }
+
+  camera {
+    at = [2.4, 2.1, 3.6]
+    target = [0, 0.9, 0]
+    fov = 42
+  }
+  light key {
+    type = point
+    at = [2.5, 3.5, 2.5]
+    color = "#ffffff"
+    intensity = 45
+    range = 12
+  }
+  light rim {
+    type = point
+    at = [-2, 2, -1.5]
+    color = "#82c5ff"
+    intensity = 12
+    range = 9
+  }
+  constraint robot_above_ground {
+    kind = above
+    object = body
+    target = ground
+    axis = y
+    gap = 0.56
+    tolerance = 0.02
+  }
+}

@@ -1,0 +1,682 @@
+scene "industrial_drone_showcase" {
+  units = "m"
+
+  # ========================================================
+  # High-Fidelity Aerospace Materials
+  # ========================================================
+  material carbon_matte {
+    base = "#181a1d"
+    roughness = 0.35
+    metallic = 0.10
+    surface = "carbon_fiber"
+    texture_resolution = 512
+  }
+
+  material stealth_composite {
+    base = "#22262c"
+    roughness = 0.45
+    metallic = 0.05
+  }
+
+  material titanium_satin {
+    base = "#98a0a8"
+    roughness = 0.25
+    metallic = 0.90
+    surface = "brushed_metal"
+    texture_resolution = 512
+  }
+
+  material anodized_stealth {
+    base = "#141619"
+    roughness = 0.28
+    metallic = 0.85
+    surface = "anodized_metal"
+    texture_resolution = 512
+  }
+
+  material prop_composite {
+    base = "#15171a"
+    roughness = 0.65
+    metallic = 0.02
+  }
+
+  material sensor_glass {
+    base = "#061422"
+    roughness = 0.03
+    metallic = 0.10
+    transmission = 0.90
+    ior = 1.52
+  }
+
+  material ir_germanium {
+    base = "#8c6541"
+    roughness = 0.15
+    metallic = 0.92
+  }
+
+  material skid_rubber {
+    base = "#111214"
+    roughness = 0.65
+    metallic = 0.05
+    surface = "rubber"
+  }
+
+  material strobe_green {
+    base = "#00ff66"
+    emissive = "#00ff66"
+    roughness = 0.20
+  }
+
+  material strobe_red {
+    base = "#ff2233"
+    emissive = "#ff2233"
+    roughness = 0.20
+  }
+
+  material strobe_cyan {
+    base = "#00e5ff"
+    emissive = "#00e5ff"
+    roughness = 0.20
+  }
+
+  # ========================================================
+  # Sculpted Aerodynamic Stealth Monocoque Body
+  # ========================================================
+  # Central Core Monocoque
+  box main_fuselage {
+    size = [0.160, 0.048, 0.250]
+    fillet = 0.015
+    fillet_segments = 4
+    at = [0.0, 0.065, 0.0]
+    material = stealth_composite
+  }
+
+  # Lower Carbon Underbody Tray
+  box belly_plate {
+    size = [0.140, 0.012, 0.270]
+    fillet = 0.005
+    fillet_segments = 2
+    at = [0.0, 0.040, 0.0]
+    material = carbon_matte
+  }
+
+  # Aerodynamic Top Canopy Cowl
+  box top_canopy {
+    size = [0.115, 0.032, 0.210]
+    fillet = 0.012
+    fillet_segments = 4
+    at = [0.0, 0.098, -0.010]
+    material = stealth_composite
+  }
+
+  # Aggressive Forward Nose Cone
+  cone nose_fairing {
+    radius_bottom = 0.046
+    radius_top = 0.018
+    height = 0.065
+    segments = 24
+    rotate = [90.0, 0.0, 0.0]
+    at = [0.0, 0.072, 0.155]
+    material = stealth_composite
+  }
+
+  # Forward Pilot FPV Camera
+  cylinder fpv_camera_lens {
+    radius = 0.009
+    height = 0.010
+    rotate = [90.0, 0.0, 0.0]
+    at = [0.0, 0.072, 0.188]
+    material = sensor_glass
+  }
+
+  torus fpv_camera_bezel {
+    major_radius = 0.010
+    minor_radius = 0.002
+    rotate = [90.0, 0.0, 0.0]
+    at = [0.0, 0.072, 0.191]
+    material = titanium_satin
+  }
+
+  # Flush Rear Battery Pack Dock
+  box battery_module {
+    size = [0.096, 0.030, 0.130]
+    fillet = 0.008
+    fillet_segments = 3
+    at = [0.0, 0.118, -0.050]
+    material = carbon_matte
+  }
+
+  # Battery Quick-Release Handle / Latch
+  box battery_latch {
+    size = [0.040, 0.007, 0.018]
+    fillet = 0.002
+    fillet_segments = 2
+    at = [0.0, 0.135, 0.015]
+    material = anodized_stealth
+  }
+
+  # 4-Segment Charge LED Indicator Bar
+  box battery_led_bar {
+    size = [0.032, 0.003, 0.006]
+    at = [0.0, 0.135, -0.095]
+    material = strobe_green
+  }
+
+  # CNC Top Cooling Heat Exchanger Fins
+  box cooling_fin_1 {
+    size = [0.065, 0.008, 0.003]
+    at = [0.0, 0.116, 0.045]
+    material = anodized_stealth
+  }
+  box cooling_fin_2 {
+    size = [0.065, 0.008, 0.003]
+    at = [0.0, 0.116, 0.055]
+    material = anodized_stealth
+  }
+  box cooling_fin_3 {
+    size = [0.065, 0.008, 0.003]
+    at = [0.0, 0.116, 0.065]
+    material = anodized_stealth
+  }
+
+  # ========================================================
+  # Dual Precision RTK GNSS Receiver Masts
+  # ========================================================
+  cylinder rtk_mast_left {
+    radius = 0.004
+    height = 0.060
+    at = [0.045, 0.140, -0.100]
+    material = carbon_matte
+  }
+
+  cone rtk_dome_left {
+    radius_bottom = 0.016
+    radius_top = 0.008
+    height = 0.016
+    segments = 24
+    at = [0.045, 0.178, -0.100]
+    material = stealth_composite
+  }
+
+  torus rtk_collar_left {
+    major_radius = 0.008
+    minor_radius = 0.002
+    at = [0.045, 0.112, -0.100]
+    material = titanium_satin
+  }
+
+  cylinder rtk_mast_right {
+    radius = 0.004
+    height = 0.060
+    at = [-0.045, 0.140, -0.100]
+    material = carbon_matte
+  }
+
+  cone rtk_dome_right {
+    radius_bottom = 0.016
+    radius_top = 0.008
+    height = 0.016
+    segments = 24
+    at = [-0.045, 0.178, -0.100]
+    material = stealth_composite
+  }
+
+  torus rtk_collar_right {
+    major_radius = 0.008
+    minor_radius = 0.002
+    at = [-0.045, 0.112, -0.100]
+    material = titanium_satin
+  }
+
+  # ========================================================
+  # Forward Obstacle Avoidance Stereo Vision Lenses
+  # ========================================================
+  cylinder stereo_eye_left {
+    radius = 0.008
+    height = 0.008
+    rotate = [90.0, 0.0, 0.0]
+    at = [0.040, 0.082, 0.145]
+    material = sensor_glass
+  }
+
+  torus stereo_rim_left {
+    major_radius = 0.009
+    minor_radius = 0.002
+    rotate = [90.0, 0.0, 0.0]
+    at = [0.040, 0.082, 0.148]
+    material = titanium_satin
+  }
+
+  cylinder stereo_eye_right {
+    radius = 0.008
+    height = 0.008
+    rotate = [90.0, 0.0, 0.0]
+    at = [-0.040, 0.082, 0.145]
+    material = sensor_glass
+  }
+
+  torus stereo_rim_right {
+    major_radius = 0.009
+    minor_radius = 0.002
+    rotate = [90.0, 0.0, 0.0]
+    at = [-0.040, 0.082, 0.148]
+    material = titanium_satin
+  }
+
+  # ========================================================
+  # 3-Axis Stabilized Electro-Optical Turret Payload
+  # ========================================================
+  box gimbal_deck {
+    size = [0.060, 0.004, 0.060]
+    at = [0.0, 0.030, 0.080]
+    material = carbon_matte
+  }
+
+  torus grommet_1 {
+    major_radius = 0.008
+    minor_radius = 0.002
+    at = [0.018, 0.025, 0.098]
+    material = skid_rubber
+  }
+  torus grommet_2 {
+    major_radius = 0.008
+    minor_radius = 0.002
+    at = [-0.018, 0.025, 0.098]
+    material = skid_rubber
+  }
+  torus grommet_3 {
+    major_radius = 0.008
+    minor_radius = 0.002
+    at = [0.018, 0.025, 0.062]
+    material = skid_rubber
+  }
+  torus grommet_4 {
+    major_radius = 0.008
+    minor_radius = 0.002
+    at = [-0.018, 0.025, 0.062]
+    material = skid_rubber
+  }
+
+  cylinder yaw_motor {
+    radius = 0.013
+    height = 0.016
+    at = [0.0, 0.014, 0.080]
+    material = anodized_stealth
+  }
+
+  sweep roll_arm {
+    path_type = catmull_rom
+    control_points = [
+      [0.0, 0.007, 0.080],
+      [0.032, 0.004, 0.080],
+      [0.036, -0.022, 0.080],
+      [0.025, -0.042, 0.080]
+    ]
+    path_segments = 24
+    radius = 0.004
+    segments = 16
+    material = titanium_satin
+  }
+
+  cylinder pitch_motor {
+    radius = 0.011
+    height = 0.012
+    rotate = [0.0, 0.0, 90.0]
+    at = [0.025, -0.042, 0.080]
+    material = anodized_stealth
+  }
+
+  box camera_turret {
+    size = [0.046, 0.038, 0.046]
+    fillet = 0.008
+    fillet_segments = 3
+    at = [0.0, -0.042, 0.080]
+    material = anodized_stealth
+  }
+
+  cylinder optical_telephoto_barrel {
+    radius = 0.012
+    height = 0.014
+    rotate = [90.0, 0.0, 0.0]
+    at = [0.010, -0.042, 0.106]
+    material = titanium_satin
+  }
+
+  cylinder optical_telephoto_glass {
+    radius = 0.010
+    height = 0.003
+    rotate = [90.0, 0.0, 0.0]
+    at = [0.010, -0.042, 0.113]
+    material = sensor_glass
+  }
+
+  cylinder thermal_flir_lens {
+    radius = 0.009
+    height = 0.006
+    rotate = [90.0, 0.0, 0.0]
+    at = [-0.011, -0.042, 0.104]
+    material = ir_germanium
+  }
+
+  torus thermal_flir_bezel {
+    major_radius = 0.010
+    minor_radius = 0.002
+    rotate = [90.0, 0.0, 0.0]
+    at = [-0.011, -0.042, 0.107]
+    material = titanium_satin
+  }
+
+  cylinder lrf_diode {
+    radius = 0.003
+    height = 0.004
+    rotate = [90.0, 0.0, 0.0]
+    at = [0.0, -0.032, 0.105]
+    material = sensor_glass
+  }
+
+  # ========================================================
+  # Heavy-Duty Rotor Arm Prototype
+  # ========================================================
+  prototype rotor_arm_assembly {
+    # CNC Machined Arm Folding Knuckle Clamp
+    box hinge_shoulder {
+      size = [0.036, 0.030, 0.038]
+      fillet = 0.005
+      fillet_segments = 2
+      at = [0.0, 0.0, 0.020]
+      material = anodized_stealth
+    }
+
+    cylinder hinge_pin {
+      radius = 0.003
+      height = 0.034
+      at = [0.0, 0.0, 0.020]
+      material = titanium_satin
+    }
+
+    # Sturdy Carbon Fiber Boom Spar
+    cylinder spar {
+      radius = 0.013
+      height = 0.220
+      rotate = [90.0, 0.0, 0.0]
+      at = [0.0, 0.0, 0.130]
+      material = carbon_matte
+    }
+
+    # Motor CNC Stator Housing
+    cylinder stator_base {
+      radius = 0.025
+      height = 0.015
+      at = [0.0, 0.008, 0.240]
+      material = anodized_stealth
+    }
+
+    # Motor Fluted Titanium Rotor Bell
+    cylinder rotor_bell {
+      radius = 0.024
+      height = 0.016
+      at = [0.0, 0.023, 0.240]
+      material = titanium_satin
+    }
+
+    # Center Propeller Hub Nut
+    cylinder prop_nut {
+      radius = 0.012
+      height = 0.012
+      at = [0.0, 0.038, 0.240]
+      material = anodized_stealth
+    }
+
+    # Dual Folding Blade Cuff Bracket
+    box prop_cuff {
+      size = [0.048, 0.007, 0.016]
+      fillet = 0.002
+      fillet_segments = 2
+      at = [0.0, 0.035, 0.240]
+      material = anodized_stealth
+    }
+
+    cylinder pin_a {
+      radius = 0.002
+      height = 0.010
+      at = [0.016, 0.037, 0.240]
+      material = titanium_satin
+    }
+
+    cylinder pin_b {
+      radius = 0.002
+      height = 0.010
+      at = [-0.016, 0.037, 0.240]
+      material = titanium_satin
+    }
+
+    # Flat Aerodynamic Carbon Propeller Blades (in rotor disk plane)
+    box blade_a {
+      size = [0.145, 0.0025, 0.020]
+      fillet = 0.001
+      fillet_segments = 2
+      at = [0.088, 0.037, 0.240]
+      material = prop_composite
+    }
+
+    box blade_b {
+      size = [0.145, 0.0025, 0.020]
+      fillet = 0.001
+      fillet_segments = 2
+      at = [-0.088, 0.037, 0.240]
+      material = prop_composite
+    }
+
+    # Under-Motor Navigation LED Beacon Pod
+    cylinder nav_strobe {
+      radius = 0.018
+      height = 0.006
+      at = [0.0, -0.004, 0.240]
+      material = strobe_cyan
+    }
+  }
+
+  # ========================================================
+  # Symmetrical Diagonal Quadrotor Radial Arm Instancing
+  # ========================================================
+  instance arm_fr {
+    prototype = rotor_arm_assembly
+    at = [0.060, 0.065, 0.075]
+    rotate = [0.0, 45.0, 0.0]
+  }
+
+  instance arm_fl {
+    prototype = rotor_arm_assembly
+    at = [-0.060, 0.065, 0.075]
+    rotate = [0.0, -45.0, 0.0]
+  }
+
+  instance arm_rr {
+    prototype = rotor_arm_assembly
+    at = [0.060, 0.065, -0.075]
+    rotate = [0.0, 135.0, 0.0]
+  }
+
+  instance arm_rl {
+    prototype = rotor_arm_assembly
+    at = [-0.060, 0.065, -0.075]
+    rotate = [0.0, -135.0, 0.0]
+  }
+
+  # ========================================================
+  # Precision Landing Gear: Rigid Carbon A-Frame & Skids
+  # ========================================================
+  # Left Horizontal Skid Runner Tube
+  cylinder skid_tube_left {
+    radius = 0.007
+    height = 0.300
+    rotate = [90.0, 0.0, 0.0]
+    at = [0.130, -0.055, 0.0]
+    material = carbon_matte
+  }
+
+  sphere skid_bumper_fl {
+    radius = 0.008
+    at = [0.130, -0.055, 0.150]
+    material = skid_rubber
+  }
+
+  sphere skid_bumper_rl {
+    radius = 0.008
+    at = [0.130, -0.055, -0.150]
+    material = skid_rubber
+  }
+
+  # Left Front Diagonal Strut (connects chassis [0.05, 0.035, 0.075] to skid [0.13, -0.055, 0.075])
+  # dx = 0.08, dy = -0.09 -> L = sqrt(0.08^2 + 0.09^2) = 0.1204
+  # mid = [0.090, -0.010, 0.075], angle = atan2(0.08, 0.09) = 41.63 deg
+  cylinder skid_strut_fl {
+    radius = 0.006
+    height = 0.120
+    rotate = [0.0, 0.0, 41.63]
+    at = [0.090, -0.010, 0.075]
+    material = carbon_matte
+  }
+
+  cylinder skid_strut_rl {
+    radius = 0.006
+    height = 0.120
+    rotate = [0.0, 0.0, 41.63]
+    at = [0.090, -0.010, -0.075]
+    material = carbon_matte
+  }
+
+  cylinder sleeve_fl {
+    radius = 0.010
+    height = 0.022
+    rotate = [90.0, 0.0, 0.0]
+    at = [0.130, -0.055, 0.075]
+    material = titanium_satin
+  }
+
+  cylinder sleeve_rl {
+    radius = 0.010
+    height = 0.022
+    rotate = [90.0, 0.0, 0.0]
+    at = [0.130, -0.055, -0.075]
+    material = titanium_satin
+  }
+
+  box footpad_fl {
+    size = [0.020, 0.008, 0.032]
+    fillet = 0.002
+    fillet_segments = 2
+    at = [0.130, -0.063, 0.075]
+    material = skid_rubber
+  }
+
+  box footpad_rl {
+    size = [0.020, 0.008, 0.032]
+    fillet = 0.002
+    fillet_segments = 2
+    at = [0.130, -0.063, -0.075]
+    material = skid_rubber
+  }
+
+  # Right Horizontal Skid Runner Tube
+  cylinder skid_tube_right {
+    radius = 0.007
+    height = 0.300
+    rotate = [90.0, 0.0, 0.0]
+    at = [-0.130, -0.055, 0.0]
+    material = carbon_matte
+  }
+
+  sphere skid_bumper_fr {
+    radius = 0.008
+    at = [-0.130, -0.055, 0.150]
+    material = skid_rubber
+  }
+
+  sphere skid_bumper_rr {
+    radius = 0.008
+    at = [-0.130, -0.055, -0.150]
+    material = skid_rubber
+  }
+
+  # Right Front Diagonal Strut (connects chassis [-0.05, 0.035, 0.075] to skid [-0.13, -0.055, 0.075])
+  cylinder skid_strut_fr {
+    radius = 0.006
+    height = 0.120
+    rotate = [0.0, 0.0, -41.63]
+    at = [-0.090, -0.010, 0.075]
+    material = carbon_matte
+  }
+
+  cylinder skid_strut_rr {
+    radius = 0.006
+    height = 0.120
+    rotate = [0.0, 0.0, -41.63]
+    at = [-0.090, -0.010, -0.075]
+    material = carbon_matte
+  }
+
+  cylinder sleeve_fr {
+    radius = 0.010
+    height = 0.022
+    rotate = [90.0, 0.0, 0.0]
+    at = [-0.130, -0.055, 0.075]
+    material = titanium_satin
+  }
+
+  cylinder sleeve_rr {
+    radius = 0.010
+    height = 0.022
+    rotate = [90.0, 0.0, 0.0]
+    at = [-0.130, -0.055, -0.075]
+    material = titanium_satin
+  }
+
+  box footpad_fr {
+    size = [0.020, 0.008, 0.032]
+    fillet = 0.002
+    fillet_segments = 2
+    at = [-0.130, -0.063, 0.075]
+    material = skid_rubber
+  }
+
+  box footpad_rr {
+    size = [0.020, 0.008, 0.032]
+    fillet = 0.002
+    fillet_segments = 2
+    at = [-0.130, -0.063, -0.075]
+    material = skid_rubber
+  }
+
+  # ========================================================
+  # Cinematic Studio Setup
+  # ========================================================
+  camera {
+    at = [0.60, 0.30, 0.58]
+    target = [0.0, 0.04, 0.02]
+    fov = 44.0
+    near = 0.01
+    far = 100.0
+  }
+
+  light key_light {
+    type = directional
+    at = [3.0, 4.5, 3.5]
+    color = "#fffaf0"
+    intensity = 180.0
+  }
+
+  light rim_light {
+    type = directional
+    at = [-3.5, 3.0, -3.5]
+    color = "#88b0ee"
+    intensity = 130.0
+  }
+
+  light fill_light {
+    type = directional
+    at = [0.0, -2.5, 0.0]
+    color = "#445566"
+    intensity = 40.0
+  }
+}

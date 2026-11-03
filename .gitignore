@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+*.egg-info/
+.installed.cfg
+*.egg
+# Build artifacts
+dist/
+build/
+develop-eggs/
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Rust / Cargo
+target/
+crates/*/target/
+crates/m3l_core/target/
+**/*.rs.bk
+*.whl
+
+# Blender backups
+*.blend1
+*.blend2
+
+# OS / Editor artifacts
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/

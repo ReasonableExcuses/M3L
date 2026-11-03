@@ -1,0 +1,70 @@
+scene "design_study_procedural_forms" {
+  units = m
+
+  material ceramic {
+    base = "#c77a54"
+    roughness = 0.3
+    metallic = 0.04
+  }
+
+  material alloy {
+    base = "#aab7c4"
+    roughness = 0.24
+    metallic = 0.88
+  }
+
+  material dark_polymer {
+    base = "#242a32"
+    roughness = 0.72
+  }
+
+  revolve vessel {
+    profile = [[0, -0.42], [0.16, -0.42], [0.31, -0.30], [0.37, 0.00], [0.30, 0.25], [0.19, 0.42], [0.15, 0.42], [0.15, 0.32], [0.23, 0.16], [0.25, 0.00], [0.20, -0.24], [0, -0.24]]
+    segments = 64
+    at = [-0.62, 0.48, 0]
+    material = ceramic
+  }
+
+  extrude support_arm {
+    profile = [[-0.65, -0.07], [0.65, -0.07], [0.65, 0.07], [-0.65, 0.07]]
+    depth = 0.12
+    at = [0.35, 0.52, 0]
+    rotate = [0, 0, -12]
+    material = alloy
+  }
+
+  revolve knob {
+    profile = [[0, -0.12], [0.09, -0.12], [0.14, -0.04], [0.13, 0.04], [0.07, 0.12], [0, 0.12]]
+    segments = 48
+    at = [0.98, 0.52, 0]
+    material = dark_polymer
+  }
+
+  box plinth {
+    size = [2.7, 0.08, 1.2]
+    at = [0.18, -0.04, 0]
+    material = dark_polymer
+  }
+
+  camera {
+    at = [2.7, 2.4, 4.0]
+    target = [0.15, 0.35, 0]
+    fov = 48
+  }
+
+  light key {
+    type = point
+    at = [1.0, 3.2, 2.4]
+    color = "#ffe3c0"
+    intensity = 700
+    range = 10
+  }
+
+  light fill {
+    type = point
+    at = [-2.0, 1.7, -1.8]
+    color = "#9bc7ff"
+    intensity = 250
+    range = 8
+  }
+}
