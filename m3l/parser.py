@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import ast
+import json
 import math
 import re
 from typing import Any
@@ -117,6 +118,13 @@ def _parse_value(raw: str, line_no: int, env: dict[str, Any] | None = None) -> A
             value = ast.literal_eval(raw)
             return _json_value(value)
         except (SyntaxError, ValueError):
+            # Attempt to parse json-like syntax with unquoted keys (e.g. {time: 0.0, value: 1.0})
+            try:
+                normalized = re.sub(r'([{\[,]\s*)([A-Za-z_][A-Za-z0-9_-]*)\s*[:=]\s*', r'\1"\2": ', raw)
+                value = json.loads(normalized)
+                return _json_value(value)
+            except Exception:
+                pass
             if env:
                 try:
                     parsed_expr = ast.parse(raw, mode="eval")
@@ -194,14 +202,18 @@ def parse(source: str) -> dict[str, Any]:
 
         if accumulator:
             accumulator += " " + line
-            if accumulator.count("[") <= accumulator.count("]") and accumulator.count("(") <= accumulator.count(")"):
+            if (accumulator.count("[") <= accumulator.count("]") and
+                accumulator.count("(") <= accumulator.count(")") and
+                accumulator.count("{") <= accumulator.count("}")):
                 line = accumulator
                 accumulator = ""
                 line_no = accum_start_line
             else:
                 continue
         elif "=" in line and not line.endswith("{"):
-            if line.count("[") > line.count("]") or line.count("(") > line.count(")"):
+            if (line.count("[") > line.count("]") or
+                line.count("(") > line.count(")") or
+                line.count("{") > line.count("}")):
                 accumulator = line
                 accum_start_line = line_no
                 continue
@@ -213,7 +225,7 @@ def parse(source: str) -> dict[str, Any]:
             name = m.group(1) or m.group(2)
             scene = {
                 "name": name, "units": "m", "materials": {}, "objects": [], "arrays": [], "features": [], "variants": [],
-                "groups": [], "prototypes": [], "instances": [], "params": {},
+                "groups": [], "prototypes": [], "instances": [], "params": {}, "joints": [], "animations": [],
                 "camera": None, "lights": [], "constraints": [], "source_lines": len(lines)
             }
             stack.append(("scene", scene, line_no))
@@ -241,16 +253,16 @@ def parse(source: str) -> dict[str, Any]:
             continue
 
         # Nested block declarations.
-        m = re.fullmatch(r'(material|feature|variant|box|sphere|cylinder|extrude|revolve|sweep|loft|cone|torus|boolean|subdivision|group|prototype|instance|camera|light|constraint|array)\s*(?:([A-Za-z_][A-Za-z0-9_-]*))?\s*\{', line)
+        m = re.fullmatch(r'(material|feature|variant|box|sphere|cylinder|extrude|revolve|sweep|loft|cone|torus|boolean|subdivision|group|prototype|instance|camera|light|constraint|array|joint|animation)\s*(?:([A-Za-z_][A-Za-z0-9_-]*))?\s*\{', line)
         if m:
             block_type, block_name = m.group(1), m.group(2)
             if kind not in ("scene", "group", "prototype"):
                 raise M3LParseError("Blocks cannot be nested inside object blocks in M3L.", line_no)
-            if kind == "group" and block_type in ("group", "prototype", "instance", "material", "feature", "variant", "camera", "light", "constraint"):
+            if kind == "group" and block_type in ("group", "prototype", "instance", "material", "feature", "variant", "camera", "light", "constraint", "joint", "animation"):
                 raise M3LParseError(f"A {block_type} block cannot be declared inside a group.", line_no)
-            if kind == "prototype" and block_type in ("group", "prototype", "instance", "material", "feature", "variant", "camera", "light", "constraint", "array"):
+            if kind == "prototype" and block_type in ("group", "prototype", "instance", "material", "feature", "variant", "camera", "light", "constraint", "array", "joint", "animation"):
                 raise M3LParseError(f"A {block_type} block cannot be declared inside a prototype.", line_no)
-            if block_type in ("material", "feature", "variant", "box", "sphere", "cylinder", "extrude", "revolve", "sweep", "loft", "cone", "torus", "boolean", "subdivision", "group", "prototype", "instance", "light", "constraint", "array") and not block_name:
+            if block_type in ("material", "feature", "variant", "box", "sphere", "cylinder", "extrude", "revolve", "sweep", "loft", "cone", "torus", "boolean", "subdivision", "group", "prototype", "instance", "light", "constraint", "array", "joint", "animation") and not block_name:
                 raise M3LParseError(f"A {block_type} block needs a name.", line_no)
             if block_type == "camera" and block_name:
                 raise M3LParseError("Camera is a singleton and does not take a name.", line_no)
@@ -301,6 +313,12 @@ def parse(source: str) -> dict[str, Any]:
             elif block_type == "array":
                 scene["arrays"].append(block)  # type: ignore[index]
                 stack.append(("array", block["props"], line_no))
+            elif block_type == "joint":
+                scene["joints"].append(block)  # type: ignore[index]
+                stack.append(("joint", block["props"], line_no))
+            elif block_type == "animation":
+                scene["animations"].append(block)  # type: ignore[index]
+                stack.append(("animation", block["props"], line_no))
             continue
 
         if line in ("};", "}; # end"):

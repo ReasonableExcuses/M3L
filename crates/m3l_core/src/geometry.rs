@@ -307,3 +307,150 @@ pub fn triangulate_polygon_2d(pts: &[[f32; 2]]) -> Vec<[u32; 3]> {
     result
 }
 
+/// Helper to compute face normal for 3 vertices
+fn triangle_normal(p0: [f32; 3], p1: [f32; 3], p2: [f32; 3]) -> [f32; 3] {
+    let u = [p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2]];
+    let v = [p2[0] - p0[0], p2[1] - p0[1], p2[2] - p0[2]];
+    let nx = u[1] * v[2] - u[2] * v[1];
+    let ny = u[2] * v[0] - u[0] * v[2];
+    let nz = u[0] * v[1] - u[1] * v[0];
+    let len = (nx * nx + ny * ny + nz * nz).sqrt();
+    if len > 1e-10 {
+        [nx / len, ny / len, nz / len]
+    } else {
+        [0.0, 1.0, 0.0]
+    }
+}
+
+fn dot_prod(a: [f32; 3], b: [f32; 3]) -> f32 {
+    a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+}
+
+/// Decimates a 3D triangle mesh using edge collapse while preserving topology and avoiding face inversion.
+pub fn decimate_mesh(
+    vertices: Vec<[f32; 3]>,
+    triangles: Vec<[u32; 3]>,
+    target_triangles: usize,
+) -> (Vec<[f32; 3]>, Vec<[u32; 3]>) {
+    if triangles.len() <= target_triangles || target_triangles < 4 {
+        return (vertices, triangles);
+    }
+
+    let mut current_triangles = triangles;
+    let n_verts = vertices.len();
+    let mut vertex_remap: Vec<u32> = (0..n_verts as u32).collect();
+
+    fn get_root(remap: &[u32], mut idx: u32) -> u32 {
+        while remap[idx as usize] != idx {
+            idx = remap[idx as usize];
+        }
+        idx
+    }
+
+    // Iterative edge collapse
+    let mut max_passes = 25;
+    while current_triangles.len() > target_triangles && max_passes > 0 {
+        max_passes -= 1;
+
+        // 1. Collect unique edges with their squared length
+        let mut edges: Vec<(u32, u32, f32)> = Vec::new();
+        for tri in &current_triangles {
+            let (a, b, c) = (tri[0], tri[1], tri[2]);
+            for &(u, v) in &[(a, b), (b, c), (c, a)] {
+                let (u, v) = if u < v { (u, v) } else { (v, u) };
+                let pu = vertices[u as usize];
+                let pv = vertices[v as usize];
+                let dx = pu[0] - pv[0];
+                let dy = pu[1] - pv[1];
+                let dz = pu[2] - pv[2];
+                let dist_sq = dx * dx + dy * dy + dz * dz;
+                edges.push((u, v, dist_sq));
+            }
+        }
+
+        // Deduplicate edges and sort by length ascending (collapse shortest edges first)
+        edges.sort_by(|a, b| a.2.partial_cmp(&b.2).unwrap_or(std::cmp::Ordering::Equal));
+        edges.dedup_by(|a, b| a.0 == b.0 && a.1 == b.1);
+
+        let mut collapsed_in_pass = 0;
+
+        for (u, v, _) in edges {
+            if current_triangles.len() <= target_triangles {
+                break;
+            }
+
+            let ru = get_root(&vertex_remap, u);
+            let rv = get_root(&vertex_remap, v);
+            if ru == rv {
+                continue;
+            }
+
+            // Test if collapsing rv -> ru inverts any triangle adjacent to rv
+            let mut valid = true;
+            for tri in &current_triangles {
+                let (t0, t1, t2) = (tri[0], tri[1], tri[2]);
+                if (t0 == rv || t1 == rv || t2 == rv) && (t0 != ru && t1 != ru && t2 != ru) {
+                    let old_n = triangle_normal(
+                        vertices[t0 as usize],
+                        vertices[t1 as usize],
+                        vertices[t2 as usize],
+                    );
+                    let new_p0 = if t0 == rv { vertices[ru as usize] } else { vertices[t0 as usize] };
+                    let new_p1 = if t1 == rv { vertices[ru as usize] } else { vertices[t1 as usize] };
+                    let new_p2 = if t2 == rv { vertices[ru as usize] } else { vertices[t2 as usize] };
+                    let new_n = triangle_normal(new_p0, new_p1, new_p2);
+                    if dot_prod(old_n, new_n) < 0.2 {
+                        valid = false;
+                        break;
+                    }
+                }
+            }
+
+            if !valid {
+                continue;
+            }
+
+            // Perform collapse: rv -> ru
+            vertex_remap[rv as usize] = ru;
+            collapsed_in_pass += 1;
+
+            // Update triangles and remove degenerate ones
+            let mut next_triangles = Vec::with_capacity(current_triangles.len());
+            for tri in current_triangles {
+                let t0 = get_root(&vertex_remap, tri[0]);
+                let t1 = get_root(&vertex_remap, tri[1]);
+                let t2 = get_root(&vertex_remap, tri[2]);
+                if t0 != t1 && t1 != t2 && t2 != t0 {
+                    next_triangles.push([t0, t1, t2]);
+                }
+            }
+            current_triangles = next_triangles;
+        }
+
+        if collapsed_in_pass == 0 {
+            break;
+        }
+    }
+
+    // Compact vertices and re-index triangles
+    let mut old_to_new = vec![u32::MAX; n_verts];
+    let mut compact_vertices = Vec::new();
+    let mut compact_triangles = Vec::with_capacity(current_triangles.len());
+
+    for tri in current_triangles {
+        let mut remapped_tri = [0u32; 3];
+        for k in 0..3 {
+            let root = get_root(&vertex_remap, tri[k]);
+            if old_to_new[root as usize] == u32::MAX {
+                let new_idx = compact_vertices.len() as u32;
+                compact_vertices.push(vertices[root as usize]);
+                old_to_new[root as usize] = new_idx;
+            }
+            remapped_tri[k] = old_to_new[root as usize];
+        }
+        compact_triangles.push(remapped_tri);
+    }
+
+    (compact_vertices, compact_triangles)
+}
+

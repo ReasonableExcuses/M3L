@@ -233,3 +233,56 @@ def export_usd(scene: dict[str, Any]) -> str:
     lines.append("}")
     return "\n".join(lines)
 
+
+def export_lods(scene: dict[str, Any], base_out_path: str, levels: list[float] | None = None) -> list[str]:
+    """Generate multi-level LOD assets (LOD0, LOD1, LOD2) from a compiled scene IR.
+
+    Returns the list of generated file paths.
+    """
+    import copy
+    from pathlib import Path
+    from .geometry import decimate_mesh
+    from .glb import export_glb
+
+    if levels is None:
+        levels = [1.0, 0.5, 0.25]
+
+    base = Path(base_out_path)
+    stem = base.stem
+    ext = base.suffix or ".glb"
+    parent = base.parent
+    parent.mkdir(parents=True, exist_ok=True)
+
+    generated_paths = []
+
+    for i, factor in enumerate(levels):
+        lod_scene = copy.deepcopy(scene)
+        if factor < 0.99:
+            for obj in lod_scene.get("objects", []):
+                geom = obj.get("geometry", {})
+                if isinstance(geom, dict) and "mesh" in geom:
+                    geom["mesh"] = decimate_mesh(geom["mesh"], target_fraction=factor)
+
+        out_name = f"{stem}_lod{i}{ext}"
+        out_file = parent / out_name
+
+        if ext.lower() == ".glb":
+            glb_data = export_glb(lod_scene)
+            out_file.write_bytes(glb_data)
+        elif ext.lower() == ".obj":
+            obj_str = export_obj(lod_scene)
+            out_file.write_text(obj_str, encoding="utf-8")
+        elif ext.lower() == ".stl":
+            stl_data = export_stl(lod_scene, binary=True)
+            out_file.write_bytes(stl_data)
+        elif ext.lower() in (".usd", ".usda"):
+            usd_str = export_usd(lod_scene)
+            out_file.write_text(usd_str, encoding="utf-8")
+        else:
+            glb_data = export_glb(lod_scene)
+            out_file.write_bytes(glb_data)
+
+        generated_paths.append(str(out_file))
+
+    return generated_paths
+

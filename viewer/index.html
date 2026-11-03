@@ -51,6 +51,10 @@
       <button id="wireframe">Wireframe</button>
       <button id="autorotate">Auto-Rotate</button>
       <button id="reset">Reset View</button>
+      <div id="anim-bar" style="display:none; align-items:center; gap:6px; margin-left:6px; padding-left:8px; border-left:1px solid #354253;">
+        <button id="play-pause" style="background:#2563eb; color:white;">⏸ Pause</button>
+        <button id="speed-toggle">1.0x</button>
+      </div>
     </div>
   </header>
   <main id="drop-zone">
@@ -106,6 +110,28 @@
     scene.add(grid);
 
     let loaded = null;
+    let mixer = null;
+    let isPlaying = true;
+    let animSpeed = 1.0;
+    const clock = new THREE.Clock();
+
+    const animBar = document.querySelector('#anim-bar');
+    const playPauseBtn = document.querySelector('#play-pause');
+    const speedBtn = document.querySelector('#speed-toggle');
+
+    playPauseBtn.addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      playPauseBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+      playPauseBtn.style.background = isPlaying ? '#2563eb' : '#374151';
+    });
+
+    speedBtn.addEventListener('click', () => {
+      const speeds = [0.5, 1.0, 2.0, 4.0];
+      const idx = (speeds.indexOf(animSpeed) + 1) % speeds.length;
+      animSpeed = speeds[idx];
+      speedBtn.textContent = animSpeed.toFixed(1) + 'x';
+      if (mixer) mixer.timeScale = animSpeed;
+    });
 
     function resize() {
       const w = root.clientWidth;
@@ -157,10 +183,27 @@
 
       try {
         let object = null;
+        if (mixer) {
+          mixer.stopAllAction();
+          mixer = null;
+        }
+
         if (lower.endsWith('.glb')) {
           const gltf = await new GLTFLoader().parseAsync(buffer, '');
           object = gltf.scene;
+          if (gltf.animations && gltf.animations.length > 0) {
+            mixer = new THREE.AnimationMixer(object);
+            gltf.animations.forEach((clip) => {
+              const action = mixer.clipAction(clip);
+              action.play();
+            });
+            mixer.timeScale = animSpeed;
+            animBar.style.display = 'inline-flex';
+          } else {
+            animBar.style.display = 'none';
+          }
         } else if (lower.endsWith('.obj')) {
+          animBar.style.display = 'none';
           const text = new TextDecoder().decode(buffer);
           object = new OBJLoader().parse(text);
           object.traverse((c) => {
@@ -169,10 +212,12 @@
             }
           });
         } else if (lower.endsWith('.stl')) {
+          animBar.style.display = 'none';
           const geom = new STLLoader().parse(buffer);
           const mat = new THREE.MeshStandardMaterial({ color: 0x4f8cf5, roughness: 0.3, metallic: 0.6 });
           object = new THREE.Mesh(geom, mat);
         } else {
+          animBar.style.display = 'none';
           throw new Error('Unsupported format. Please choose a .glb, .obj, or .stl file.');
         }
 
@@ -261,6 +306,10 @@
 
     function animate() {
       requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      if (mixer && isPlaying) {
+        mixer.update(delta);
+      }
       controls.update();
       renderer.render(scene, camera);
     }

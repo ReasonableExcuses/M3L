@@ -1408,6 +1408,144 @@ def compile_source(source: str) -> dict[str, Any]:
                                             "Adjust the object's position/size or revise the intended constraint.", line, "gap"))
         normalized_constraints.append({"name": cname, **{k: v for k, v in p.items() if k != "__lines__"}})
 
+    # Normalize joints (Tier 7)
+    known_joint_types = {"revolute", "prismatic", "ball", "fixed"}
+    normalized_joints = []
+    all_targets = set(by_name_ast.keys()) | set(groups_by_name.keys())
+    for joint in ast_scene.get("joints", []):
+        jname, p, line = joint["name"], joint["props"], joint.get("line", 1)
+        _check_properties(p, {"type", "parent", "child", "target", "anchor", "axis", "limits"},
+                          set(), f"joint:{jname}", line, diagnostics)
+        jtype = p.get("type", "revolute")
+        if jtype not in known_joint_types:
+            diagnostics.append(diag("error", "E210", f"Unknown joint type {jtype!r}.", f"joint:{jname}",
+                                    "Supported joint types: revolute, prismatic, ball, fixed.", line, "type"))
+            jtype = "revolute"
+
+        child = p.get("child") or p.get("target")
+        parent = p.get("parent")
+        if not child or child not in all_targets:
+            diagnostics.append(diag("error", "E211", f"Joint child/target {child!r} does not exist in scene.",
+                                    f"joint:{jname}", "Reference a declared object or group name.", line, "child"))
+        if parent and parent not in all_targets:
+            diagnostics.append(diag("error", "E211", f"Joint parent {parent!r} does not exist in scene.",
+                                    f"joint:{jname}", "Reference a declared object or group name.", line, "parent"))
+
+        anchor = p.get("anchor", [0.0, 0.0, 0.0])
+        if not _vec(anchor, 3):
+            anchor = [0.0, 0.0, 0.0]
+
+        axis = p.get("axis", [0.0, 1.0, 0.0])
+        if not _vec(axis, 3):
+            axis = [0.0, 1.0, 0.0]
+        else:
+            alen = math.sqrt(sum(float(v)*float(v) for v in axis)) or 1.0
+            axis = [float(v) / alen for v in axis]
+
+        limits = p.get("limits")
+        if limits is not None:
+            if not (isinstance(limits, (list, tuple)) and len(limits) == 2 and all(_finite_number(v) for v in limits)):
+                diagnostics.append(diag("error", "E212", "Joint limits must be [min, max].",
+                                        f"joint:{jname}", "Provide a pair of numbers like [-90, 90].", line, "limits"))
+                limits = None
+            elif float(limits[0]) > float(limits[1]):
+                diagnostics.append(diag("error", "E212", f"Joint min limit ({limits[0]}) cannot exceed max limit ({limits[1]}).",
+                                        f"joint:{jname}", "Ensure min <= max.", line, "limits"))
+                limits = None
+            else:
+                limits = [float(limits[0]), float(limits[1])]
+
+        normalized_joints.append({
+            "name": jname,
+            "type": jtype,
+            "parent": parent,
+            "child": child,
+            "anchor": [float(v) for v in anchor],
+            "axis": axis,
+            "limits": limits,
+            "line": line
+        })
+
+    # Normalize animations (Tier 7)
+    known_anim_channels = {
+        "rotation_x", "rotation_y", "rotation_z", "rotation",
+        "translation_x", "translation_y", "translation_z", "translation",
+        "scale", "scale_x", "scale_y", "scale_z"
+    }
+    known_interpolations = {"linear", "step", "cubic_spline", "cubic"}
+    normalized_animations = []
+    joints_by_name = {j["name"]: j for j in normalized_joints}
+
+    for anim in ast_scene.get("animations", []):
+        aname, p, line = anim["name"], anim["props"], anim.get("line", 1)
+        _check_properties(p, {"target", "joint", "channel", "keyframes", "interpolation", "loop", "duration"},
+                          {"target"}, f"animation:{aname}", line, diagnostics)
+        target = p.get("target")
+        if target not in all_targets:
+            if target in joints_by_name:
+                target = joints_by_name[target]["child"]
+            else:
+                diagnostics.append(diag("error", "E220", f"Animation target {target!r} does not exist in scene.",
+                                        f"animation:{aname}", "Reference a declared object, group, or joint name.", line, "target"))
+
+        channel = p.get("channel", "rotation_y")
+        if channel not in known_anim_channels:
+            diagnostics.append(diag("error", "E221", f"Unsupported animation channel {channel!r}.",
+                                    f"animation:{aname}", f"Choose from: {', '.join(sorted(known_anim_channels))}.", line, "channel"))
+            channel = "rotation_y"
+
+        interp = str(p.get("interpolation", "linear")).lower()
+        if interp not in known_interpolations:
+            interp = "linear"
+        if interp == "cubic":
+            interp = "cubic_spline"
+
+        loop = bool(p.get("loop", True))
+        raw_kfs = p.get("keyframes")
+        normalized_kfs = []
+
+        if not raw_kfs and "duration" in p:
+            dur = float(p["duration"]) if _finite_number(p.get("duration")) and p["duration"] > 0 else 1.0
+            normalized_kfs = [
+                {"time": 0.0, "value": 0.0},
+                {"time": dur * 0.5, "value": 180.0},
+                {"time": dur, "value": 360.0}
+            ]
+        elif not isinstance(raw_kfs, list) or len(raw_kfs) < 1:
+            diagnostics.append(diag("error", "E222", "Animation keyframes must be a non-empty list.",
+                                    f"animation:{aname}", "Provide keyframes like [{time: 0, value: 0}, {time: 1, value: 360}].", line, "keyframes"))
+        else:
+            last_t = -1.0
+            for ki, kf in enumerate(raw_kfs):
+                if not isinstance(kf, dict):
+                    diagnostics.append(diag("error", "E222", f"Keyframe {ki} must be a dictionary with 'time' and 'value'.",
+                                            f"animation:{aname}", "Use {time: 0.0, value: ...}.", line, "keyframes"))
+                    continue
+                t = kf.get("time")
+                val = kf.get("value")
+                if not _finite_number(t) or float(t) < 0:
+                    diagnostics.append(diag("error", "E223", f"Keyframe {ki} timestamp must be non-negative.",
+                                            f"animation:{aname}", "Ensure time >= 0.", line, "keyframes"))
+                    t = 0.0
+                else:
+                    t = float(t)
+                    if t < last_t:
+                        diagnostics.append(diag("error", "E223", f"Keyframe {ki} timestamp ({t}) is earlier than previous ({last_t}).",
+                                                f"animation:{aname}", "Keyframes must be monotonically ordered by time.", line, "keyframes"))
+                    last_t = t
+                normalized_kfs.append({"time": t, "value": val})
+
+        normalized_animations.append({
+            "name": aname,
+            "target": target,
+            "channel": channel,
+            "keyframes": normalized_kfs,
+            "interpolation": interp,
+            "loop": loop,
+            "duration": normalized_kfs[-1]["time"] if normalized_kfs else 0.0,
+            "line": line
+        })
+
     # Attach bounds and a few geometry facts to the IR.
     object_ir_by_name = {o["name"]: o for o in normalized_objects}
     for object_bound_name, bounds in bounds_by_name.items():
@@ -1447,13 +1585,17 @@ def compile_source(source: str) -> dict[str, Any]:
                 "groups": normalized_groups, "params": ast_scene.get("params", {}),
                 "features": normalized_features, "variants": normalized_variants,
                 "feature_graph": feature_graph, "camera": normalized_camera, "lights": normalized_lights,
-                "constraints": normalized_constraints, "bounds": {k: v for k, v in bounds_by_name.items()},
+                "constraints": normalized_constraints, "joints": normalized_joints,
+                "animations": normalized_animations,
+                "bounds": {k: v for k, v in bounds_by_name.items()},
                 "stats": {"object_count": len(normalized_objects), "material_count": len(materials),
                           "light_count": len(normalized_lights), "constraint_count": len(normalized_constraints),
                           "array_count": len(normalized_arrays), "group_count": len(normalized_groups),
                           "param_count": len(ast_scene.get("params", {})),
                           "feature_count": len(normalized_features),
-                          "variant_count": len(normalized_variants)}}
+                          "variant_count": len(normalized_variants),
+                          "joint_count": len(normalized_joints),
+                          "animation_count": len(normalized_animations)}}
     scene_ir["provenance"] = {
         "asset_revision": _revision(scene_ir),
         "feature_revision": feature_graph["revision"],

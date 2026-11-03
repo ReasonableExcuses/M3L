@@ -47,6 +47,17 @@ fn triangulate_polygon_2d(pts: Vec<[f32; 2]>) -> PyResult<Vec<[u32; 3]>> {
     Ok(geometry::triangulate_polygon_2d(&pts))
 }
 
+/// Decimates a triangle mesh down to target_triangles.
+/// Returns (new_vertices, new_triangles).
+#[pyfunction]
+fn decimate_mesh(
+    vertices: Vec<[f32; 3]>,
+    triangles: Vec<[u32; 3]>,
+    target_triangles: usize,
+) -> PyResult<(Vec<[f32; 3]>, Vec<[u32; 3]>)> {
+    Ok(geometry::decimate_mesh(vertices, triangles, target_triangles))
+}
+
 #[pymodule]
 fn m3l_core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(version, m)?)?;
@@ -55,5 +66,6 @@ fn m3l_core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(compute_bounds, m)?)?;
     m.add_function(wrap_pyfunction!(subdivide_loop, m)?)?;
     m.add_function(wrap_pyfunction!(triangulate_polygon_2d, m)?)?;
+    m.add_function(wrap_pyfunction!(decimate_mesh, m)?)?;
     Ok(())
 }

@@ -5,13 +5,13 @@ __version__ = "0.7.0"
 
 from .compiler import compile_source, apply_patches, semantic_diff, object_bounds, object_dimensions
 from .glb import export_glb
-from .exporters import export_obj, export_stl, export_usd
+from .exporters import export_obj, export_stl, export_usd, export_lods
 from .parser import parse, M3LParseError
 from .judge import judge_result
 from .quality import audit_glb, GLBFormatError
 from .reverse import decompile_glb, compile_asset_projection, pack_glb, restore_package
 from .blender_backend import render_source
-from .geometry import HAS_M3L_CORE
+from .geometry import HAS_M3L_CORE, decimate_mesh, generate_lods
 
 __all__ = [
     "compile_source",
@@ -23,6 +23,9 @@ __all__ = [
     "export_obj",
     "export_stl",
     "export_usd",
+    "export_lods",
+    "decimate_mesh",
+    "generate_lods",
     "parse",
     "M3LParseError",
     "judge_result",

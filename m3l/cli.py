@@ -14,7 +14,7 @@ from .quality import audit_glb, GLBFormatError
 from .reverse import decompile_glb, compile_asset_projection, pack_glb, restore_package, write_json
 from .procedural_materials import ProceduralMaterialsUnavailableError
 from .build import build_asset, verify_asset_bundle
-from .exporters import export_obj, export_stl, export_usd
+from .exporters import export_obj, export_stl, export_usd, export_lods
 
 
 def main(argv=None):
@@ -26,6 +26,8 @@ def main(argv=None):
         if cmd == "compile":
             p.add_argument("--out", default="scene.glb", help="Output file path")
             p.add_argument("--format", choices=("glb", "obj", "stl", "usd"), default="glb", help="Output format (default: glb)")
+            p.add_argument("--lod", action="store_true", help="Generate multi-level LOD assets (LOD0, LOD1, LOD2)")
+            p.add_argument("--lod-levels", default="1.0,0.5,0.25", help="Comma-separated decimation fractions (default: 1.0,0.5,0.25)")
             p.add_argument("--json", dest="json_out", help="Optional compiled scene IR JSON path")
         if cmd == "inspect":
             p.add_argument("--pretty", action="store_true", help="Pretty-print full scene IR")
@@ -54,6 +56,11 @@ def main(argv=None):
     usd_parser = sub.add_parser("export-usd", help="Export scene to Universal Scene Description (USDA) format")
     usd_parser.add_argument("source", help="Path to a .m3l source file")
     usd_parser.add_argument("--out", default="scene.usda", help="Output USDA path")
+
+    lods_parser = sub.add_parser("lods", help="Generate multi-level LOD assets (LOD0, LOD1, LOD2) from M3L source")
+    lods_parser.add_argument("source", help="Path to a .m3l source file")
+    lods_parser.add_argument("--out", default="scene.glb", help="Base output path (e.g. scene.glb -> scene_lod0.glb)")
+    lods_parser.add_argument("--levels", default="1.0,0.5,0.25", help="Comma-separated LOD decimation fractions (default: 1.0,0.5,0.25)")
 
     step_parser = sub.add_parser("export-step", help="Export B-rep solids to STEP with optional CadQuery/OpenCascade")
     step_parser.add_argument("source", help="Path to a .m3l source file")
@@ -250,6 +257,15 @@ def main(argv=None):
             print(json.dumps({"valid": False, "summary": result["summary"],
                               "diagnostics": result["diagnostics"]}, indent=2), file=sys.stderr)
             return 1
+
+        if getattr(args, "lod", False) or args.command == "lods":
+            levels_str = getattr(args, "levels", None) or getattr(args, "lod_levels", "1.0,0.5,0.25")
+            levels = [float(x.strip()) for x in levels_str.split(",") if x.strip()]
+            generated = export_lods(result["scene"], args.out, levels=levels)
+            print(json.dumps({"valid": True, "lods": generated, "count": len(generated),
+                              "summary": result["summary"]}, indent=2))
+            return 0
+
         out_path = Path(args.out)
         out_path.parent.mkdir(parents=True, exist_ok=True)
         fmt = getattr(args, "format", "glb")

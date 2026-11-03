@@ -409,6 +409,9 @@ def export_glb(scene: dict[str, Any]) -> bytes:
     mesh_cache = {}
 
     group_node_indices: dict[str, int] = {}
+    node_name_to_index: dict[str, int] = {}
+    rest_transforms: dict[str, dict[str, Any]] = {}
+
     for group in scene.get("groups", []):
         gtr = group.get("transform", {})
         g_scale = [float(v) for v in gtr.get("scale", [1, 1, 1])]
@@ -422,6 +425,12 @@ def export_glb(scene: dict[str, Any]) -> bytes:
         gltf["nodes"].append(g_node)
         group_idx = len(gltf["nodes"]) - 1
         group_node_indices[group["name"]] = group_idx
+        node_name_to_index[group["name"]] = group_idx
+        rest_transforms[group["name"]] = {
+            "translation": gtr.get("translation", [0, 0, 0]),
+            "rotation_euler": gtr.get("rotation_euler_degrees", [0, 0, 0]),
+            "scale": g_scale,
+        }
         gltf["scenes"][0]["nodes"].append(group_idx)
 
     for obj in scene.get("objects", []):
@@ -512,6 +521,12 @@ def export_glb(scene: dict[str, Any]) -> bytes:
                 "scale": final_scale}
         gltf["nodes"].append(node)
         obj_node_idx = len(gltf["nodes"]) - 1
+        node_name_to_index[obj["name"]] = obj_node_idx
+        rest_transforms[obj["name"]] = {
+            "translation": tr.get("translation", [0, 0, 0]),
+            "rotation_euler": tr.get("rotation_euler_degrees", [0, 0, 0]),
+            "scale": final_scale,
+        }
         group_name = obj.get("group")
         if group_name and group_name in group_node_indices:
             gltf["nodes"][group_node_indices[group_name]]["children"].append(obj_node_idx)
@@ -549,6 +564,115 @@ def export_glb(scene: dict[str, Any]) -> bytes:
     if lights_ext:
         gltf.setdefault("extensionsUsed", []).append("KHR_lights_punctual")
         gltf.setdefault("extensions", {})["KHR_lights_punctual"] = {"lights": lights_ext}
+
+    # Animations (Tier 7)
+    animations_list = scene.get("animations", [])
+    if animations_list:
+        gltf["animations"] = []
+        for anim in animations_list:
+            target_name = anim.get("target")
+            if target_name not in node_name_to_index:
+                continue
+            node_idx = node_name_to_index[target_name]
+            channel_type = anim.get("channel", "rotation_y")
+            keyframes = anim.get("keyframes", [])
+            if not keyframes:
+                continue
+
+            rest = rest_transforms.get(target_name, {
+                "translation": [0, 0, 0],
+                "rotation_euler": [0, 0, 0],
+                "scale": [1, 1, 1],
+            })
+
+            times = [[float(kf["time"])] for kf in keyframes]
+            output_rows = []
+            if channel_type in ("rotation_x", "rotation_y", "rotation_z", "rotation"):
+                path = "rotation"
+                type_name = "VEC4"
+                base_rot = list(rest.get("rotation_euler", [0, 0, 0]))
+                for kf in keyframes:
+                    val = kf.get("value", 0.0)
+                    if channel_type == "rotation_x":
+                        euler = [base_rot[0] + float(val), base_rot[1], base_rot[2]]
+                        quat = _quat_from_euler_xyz(euler)
+                    elif channel_type == "rotation_y":
+                        euler = [base_rot[0], base_rot[1] + float(val), base_rot[2]]
+                        quat = _quat_from_euler_xyz(euler)
+                    elif channel_type == "rotation_z":
+                        euler = [base_rot[0], base_rot[1], base_rot[2] + float(val)]
+                        quat = _quat_from_euler_xyz(euler)
+                    else:  # "rotation"
+                        if isinstance(val, (list, tuple)) and len(val) == 4:
+                            quat = [float(v) for v in val]
+                        elif isinstance(val, (list, tuple)) and len(val) == 3:
+                            quat = _quat_from_euler_xyz([float(v) for v in val])
+                        else:
+                            quat = _quat_from_euler_xyz([0, float(val), 0])
+                    output_rows.append(quat)
+
+            elif channel_type in ("translation_x", "translation_y", "translation_z", "translation"):
+                path = "translation"
+                type_name = "VEC3"
+                base_pos = [float(v) * unit_factor for v in rest.get("translation", [0, 0, 0])]
+                for kf in keyframes:
+                    val = kf.get("value", 0.0)
+                    if channel_type == "translation_x":
+                        row = [base_pos[0] + float(val) * unit_factor, base_pos[1], base_pos[2]]
+                    elif channel_type == "translation_y":
+                        row = [base_pos[0], base_pos[1] + float(val) * unit_factor, base_pos[2]]
+                    elif channel_type == "translation_z":
+                        row = [base_pos[0], base_pos[1], base_pos[2] + float(val) * unit_factor]
+                    else:  # "translation"
+                        row = [float(v) * unit_factor for v in val]
+                    output_rows.append(row)
+
+            elif channel_type in ("scale", "scale_x", "scale_y", "scale_z"):
+                path = "scale"
+                type_name = "VEC3"
+                base_s = [float(v) for v in rest.get("scale", [1, 1, 1])]
+                for kf in keyframes:
+                    val = kf.get("value", 1.0)
+                    if channel_type == "scale":
+                        if isinstance(val, (list, tuple)):
+                            row = [base_s[0] * float(val[0]), base_s[1] * float(val[1]), base_s[2] * float(val[2])]
+                        else:
+                            s = float(val)
+                            row = [base_s[0] * s, base_s[1] * s, base_s[2] * s]
+                    elif channel_type == "scale_x":
+                        row = [base_s[0] * float(val), base_s[1], base_s[2]]
+                    elif channel_type == "scale_y":
+                        row = [base_s[0], base_s[1] * float(val), base_s[2]]
+                    elif channel_type == "scale_z":
+                        row = [base_s[0], base_s[1], base_s[2] * float(val)]
+                    output_rows.append(row)
+            else:
+                continue
+
+            time_accessor = b.add_floats(times, type_name="SCALAR", target=None, bounds=True)
+            val_accessor = b.add_floats(output_rows, type_name=type_name, target=None)
+
+            interp = anim.get("interpolation", "linear").upper()
+            if interp not in ("LINEAR", "STEP", "CUBICSPLINE"):
+                interp = "LINEAR"
+
+            sampler_doc = {
+                "input": time_accessor,
+                "interpolation": interp,
+                "output": val_accessor
+            }
+            channel_doc = {
+                "sampler": 0,
+                "target": {
+                    "node": node_idx,
+                    "path": path
+                }
+            }
+            gltf["animations"].append({
+                "name": anim.get("name", f"anim_{len(gltf['animations'])}"),
+                "samplers": [sampler_doc],
+                "channels": [channel_doc]
+            })
 
     # Extension declarations are sets in glTF semantics; canonicalize order and
     # remove duplicates when many materials use the same extension.

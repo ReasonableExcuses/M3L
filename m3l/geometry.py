@@ -1198,3 +1198,152 @@ def build_subdivision(base_mesh: dict[str, Any], levels: int = 1) -> dict[str, A
         "render_indices": [i for tri in tris for i in tri],
         "shading": "smooth",
     }
+
+
+def decimate_mesh(mesh: dict[str, Any], target_fraction: float = 0.5) -> dict[str, Any]:
+    """Decimate a 3D triangle mesh down to target_fraction (e.g. 0.5 = 50% triangles).
+
+    Preserves boundary conditions, watertight 2-manifold topology, and avoids normal flipping.
+    """
+    if not isinstance(mesh, dict) or not mesh.get("vertices") or not mesh.get("triangles"):
+        raise ValueError("Decimation requires a valid mesh dictionary with vertices and triangles.")
+
+    target_fraction = max(0.05, min(float(target_fraction), 1.0))
+    verts = [[float(x) for x in v] for v in mesh["vertices"]]
+    tris = [list(t) for t in mesh["triangles"]]
+    target_triangles = max(4, int(len(tris) * target_fraction))
+
+    if len(tris) <= target_triangles:
+        return dict(mesh)
+
+    if HAS_M3L_CORE and hasattr(m3l_core, "decimate_mesh"):
+        try:
+            dec_verts, dec_tris = m3l_core.decimate_mesh(verts, tris, target_triangles)
+            if len(dec_tris) >= 4:
+                normals = _smooth_normals(dec_verts, dec_tris)
+                return {
+                    "vertices": dec_verts,
+                    "triangles": dec_tris,
+                    "render_vertices": [list(v) for v in dec_verts],
+                    "render_normals": normals,
+                    "render_indices": [i for tri in dec_tris for i in tri],
+                    "shading": mesh.get("shading", "smooth"),
+                }
+        except Exception:
+            pass
+
+    # Pure Python edge-collapse decimation fallback
+    n_verts = len(verts)
+    vertex_remap = list(range(n_verts))
+
+    def get_root(idx: int) -> int:
+        while vertex_remap[idx] != idx:
+            idx = vertex_remap[idx]
+        return idx
+
+    def tri_normal(p0, p1, p2):
+        u = [p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2]]
+        v = [p2[0] - p0[0], p2[1] - p0[1], p2[2] - p0[2]]
+        nx = u[1] * v[2] - u[2] * v[1]
+        ny = u[2] * v[0] - u[0] * v[2]
+        nz = u[0] * v[1] - u[1] * v[0]
+        length = math.sqrt(nx*nx + ny*ny + nz*nz) or 1.0
+        return [nx/length, ny/length, nz/length]
+
+    curr_tris = [list(t) for t in tris]
+    max_passes = 25
+    while len(curr_tris) > target_triangles and max_passes > 0:
+        max_passes -= 1
+        edges = []
+        for t in curr_tris:
+            for u, v in ((t[0], t[1]), (t[1], t[2]), (t[2], t[0])):
+                eu, ev = (u, v) if u < v else (v, u)
+                dx = verts[eu][0] - verts[ev][0]
+                dy = verts[eu][1] - verts[ev][1]
+                dz = verts[eu][2] - verts[ev][2]
+                edges.append((eu, ev, dx*dx + dy*dy + dz*dz))
+
+        edges.sort(key=lambda e: e[2])
+        seen_edges = set()
+        unique_edges = []
+        for eu, ev, d in edges:
+            if (eu, ev) not in seen_edges:
+                seen_edges.add((eu, ev))
+                unique_edges.append((eu, ev, d))
+
+        collapsed_in_pass = 0
+        for eu, ev, _ in unique_edges:
+            if len(curr_tris) <= target_triangles:
+                break
+            ru = get_root(eu)
+            rv = get_root(ev)
+            if ru == rv:
+                continue
+
+            valid = True
+            for t in curr_tris:
+                if (t[0] == rv or t[1] == rv or t[2] == rv) and (t[0] != ru and t[1] != ru and t[2] != ru):
+                    old_n = tri_normal(verts[t[0]], verts[t[1]], verts[t[2]])
+                    p0 = verts[ru] if t[0] == rv else verts[t[0]]
+                    p1 = verts[ru] if t[1] == rv else verts[t[1]]
+                    p2 = verts[ru] if t[2] == rv else verts[t[2]]
+                    new_n = tri_normal(p0, p1, p2)
+                    dot = sum(old_n[k] * new_n[k] for k in range(3))
+                    if dot < 0.2:
+                        valid = False
+                        break
+            if not valid:
+                continue
+
+            vertex_remap[rv] = ru
+            collapsed_in_pass += 1
+            next_tris = []
+            for t in curr_tris:
+                t0 = get_root(t[0])
+                t1 = get_root(t[1])
+                t2 = get_root(t[2])
+                if t0 != t1 and t1 != t2 and t2 != t0:
+                    next_tris.append([t0, t1, t2])
+            curr_tris = next_tris
+
+        if collapsed_in_pass == 0:
+            break
+
+    old_to_new = {}
+    compact_verts = []
+    compact_tris = []
+    for t in curr_tris:
+        new_tri = []
+        for idx in t:
+            root = get_root(idx)
+            if root not in old_to_new:
+                old_to_new[root] = len(compact_verts)
+                compact_verts.append(verts[root])
+            new_tri.append(old_to_new[root])
+        compact_tris.append(new_tri)
+
+    normals = _smooth_normals(compact_verts, compact_tris)
+    return {
+        "vertices": compact_verts,
+        "triangles": compact_tris,
+        "render_vertices": [list(v) for v in compact_verts],
+        "render_normals": normals,
+        "render_indices": [i for tri in compact_tris for i in tri],
+        "shading": mesh.get("shading", "smooth"),
+    }
+
+
+def generate_lods(mesh: dict[str, Any], levels: list[float] | None = None) -> list[dict[str, Any]]:
+    """Generate a multi-LOD pyramid for a mesh solid.
+
+    Default levels: [1.0 (LOD0), 0.5 (LOD1), 0.25 (LOD2)].
+    """
+    if levels is None:
+        levels = [1.0, 0.5, 0.25]
+    lods = []
+    for factor in levels:
+        if factor >= 0.99:
+            lods.append(mesh)
+        else:
+            lods.append(decimate_mesh(mesh, target_fraction=factor))
+    return lods

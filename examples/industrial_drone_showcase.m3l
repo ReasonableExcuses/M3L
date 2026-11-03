@@ -679,4 +679,27 @@ scene "industrial_drone_showcase" {
     color = "#445566"
     intensity = 40.0
   }
+
+  # ========================================================
+  # Declarative Kinematics & Animations (Tier 7)
+  # ========================================================
+  joint gimbal_pitch {
+    type = revolute
+    parent = yaw_motor
+    child = camera_turret
+    anchor = [0.0, -0.042, 0.080]
+    axis = [1.0, 0.0, 0.0]
+    limits = [-90.0, 30.0]
+  }
+
+  animation gimbal_scan {
+    target = camera_turret
+    channel = rotation_x
+    keyframes = [
+      {time: 0.0, value: 0.0},
+      {time: 1.5, value: -35.0},
+      {time: 3.0, value: 10.0},
+      {time: 4.5, value: 0.0}
+    ]
+  }
 }

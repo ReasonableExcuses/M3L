@@ -247,13 +247,16 @@ def handle_tool_call(name: str, args: dict[str, Any]) -> dict[str, Any]:
 
     elif name == "m3l_capabilities":
         return {
-            "engine": "M3L v0.6.0 Supremacy Edition",
+            "engine": "M3L v0.7.0 Supremacy Edition",
             "primitives": [
                 "box", "sphere", "cylinder", "cone", "torus",
                 "extrude", "revolve", "sweep", "loft",
                 "boolean", "subdivision"
             ],
             "kinematics": ["snap_to_ground", "align_bottom", "attach_to", "mirror_copy"],
+            "joints": ["revolute", "prismatic", "ball", "fixed"],
+            "animation": ["rotation", "translation", "scale", "keyframes", "linear", "step", "cubic_spline"],
+            "lods": ["decimate_mesh", "generate_lods", "multi_lod_export"],
             "exporters": ["glb", "obj", "stl", "usd", "step"],
             "splines": ["linear", "catmull_rom", "cubic_bezier", "b_spline"],
             "booleans": ["difference", "union", "intersection"],
@@ -278,11 +281,13 @@ def handle_tool_call(name: str, args: dict[str, Any]) -> dict[str, Any]:
     elif name == "m3l_schema":
         return {
             "format": "m3l",
-            "version": "0.6.0",
+            "version": "0.7.0",
             "syntax_rules": [
                 "Declarative block syntax: <type> <name> { <prop> = <value> }",
-                "Top-level blocks: scene, material, param, prototype, group, instance, camera, light",
+                "Top-level blocks: scene, material, param, prototype, group, instance, camera, light, joint, animation",
                 "Primitives: box, sphere, cylinder, cone, torus, extrude, revolve, sweep, loft, boolean, subdivision",
+                "Joints: joint <name> { type = revolute; parent = ...; child = ...; anchor = [...]; axis = [...]; limits = [...] }",
+                "Animations: animation <name> { target = ...; channel = rotation_y; keyframes = [{time: 0, value: 0}, ...] }",
                 "Units default to meters (m)",
                 "Vectors are bracketed lists: [x, y, z]",
                 "Colors are hex strings: #rrggbb",
